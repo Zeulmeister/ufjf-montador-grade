@@ -13,9 +13,14 @@ import { initialCourses, COURSE_COLORS } from './data/coursesData';
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
+  
+  const [academicPeriod, setAcademicPeriod] = useState(() => {
+    return localStorage.getItem('ufjf_academic_period') || '2026/3';
+  });
+
   const [courses, setCourses] = useState(() => {
     const savedCustom = localStorage.getItem('ufjf_custom_courses');
-    return savedCustom ? [...initialCourses, ...JSON.parse(savedCustom)] : initialCourses;
+    return savedCustom ? JSON.parse(savedCustom) : initialCourses;
   });
 
   // Active selected turmas in schedule: array of { course, turma }
@@ -56,6 +61,11 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('ufjf_saved_drafts', JSON.stringify(savedDrafts));
   }, [savedDrafts]);
+
+  // Persist academic period
+  useEffect(() => {
+    localStorage.setItem('ufjf_academic_period', academicPeriod);
+  }, [academicPeriod]);
 
   // Map each course code to a unique color index
   const courseColorMap = useMemo(() => {
@@ -151,7 +161,8 @@ export default function App() {
       const image = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = image;
-      link.download = `grade_ufjf_2026_1.png`;
+      const safePeriod = (academicPeriod || 'periodo').replace('/', '_');
+      link.download = `grade_ufjf_${safePeriod}.png`;
       link.click();
     } catch (err) {
       console.error("Erro ao exportar imagem:", err);
@@ -173,7 +184,11 @@ export default function App() {
   };
 
   // Import courses from SIGA parser
-  const handleImportSigaCourses = (importedCourses) => {
+  const handleImportSigaCourses = (importedCourses, newPeriod) => {
+    if (newPeriod) {
+      setAcademicPeriod(newPeriod);
+    }
+
     setCourses(prev => {
       const coursesMap = new Map();
       prev.forEach(c => {
@@ -229,6 +244,8 @@ export default function App() {
         setTheme={setTheme}
         selectedCount={selectedTurmas.length}
         totalHours={totalHours}
+        academicPeriod={academicPeriod}
+        onUpdateAcademicPeriod={setAcademicPeriod}
         onClear={handleClearAll}
         onExport={handleExport}
         onOpenDrafts={() => setIsDraftsOpen(true)}
@@ -268,6 +285,7 @@ export default function App() {
           onRemoveTurma={handleRemoveTurma}
           gridRef={gridRef}
           courseColorMap={courseColorMap}
+          academicPeriod={academicPeriod}
         />
 
       </main>

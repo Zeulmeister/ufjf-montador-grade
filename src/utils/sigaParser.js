@@ -1,14 +1,44 @@
 export function parseSigaText(rawText) {
-  if (!rawText || !rawText.trim()) return [];
+  if (!rawText || !rawText.trim()) return { courses: [], period: null };
 
   const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
   const coursesMap = new Map();
 
   let currentCourse = null;
   let currentTurma = null;
-  let expectingDocentesPDF = false;
   let expectingDocentesWeb = false;
   let expectingHorarioPDF = false;
+
+  let detectedAno = null;
+  let detectedSemestre = null;
+
+  // Scan top 30 lines BEFORE filtering out header lines
+  for (const line of lines.slice(0, 30)) {
+    // Format: "3º Semestre de 2026" or "1º Semestre de 2026"
+    const semDeAnoMatch = line.match(/(\d+)\s*º?\s*Semestre\s+de\s+(\d{4})/i);
+    if (semDeAnoMatch) {
+      detectedSemestre = semDeAnoMatch[1];
+      detectedAno = semDeAnoMatch[2];
+      break;
+    }
+
+    // Format: "Ano: 2026 Semestre: 3"
+    const anoMatch = line.match(/Ano:\s*(\d{4})/i) || line.match(/Ano\s+(\d{4})/i);
+    if (anoMatch && !detectedAno) detectedAno = anoMatch[1];
+
+    const semMatch = line.match(/Semestre:\s*(\d+)/i) || line.match(/Semestre\s+(\d+)/i);
+    if (semMatch && !detectedSemestre) detectedSemestre = semMatch[1];
+
+    const periodSlashMatch = line.match(/(\d{4})\s*[\/\.-]\s*(\d+)/);
+    if (periodSlashMatch && !detectedAno) {
+      detectedAno = periodSlashMatch[1];
+      detectedSemestre = periodSlashMatch[2];
+    }
+  }
+
+  const period = (detectedAno && detectedSemestre)
+    ? `${detectedAno}/${detectedSemestre}`
+    : (detectedAno ? `${detectedAno}` : (detectedSemestre ? `Semestre ${detectedSemestre}` : null));
 
   const dayMap = {
     'segunda-feira': 'seg',
@@ -18,9 +48,6 @@ export function parseSigaText(rawText) {
     'sexta-feira': 'sex',
     'sábado': 'sab'
   };
-
-  // PDF Format: "Disciplina MAT013 - MATEMÁTICA FINANCEIRA" or "Disciplina 2MA13 - GEOMETRIA"
-  const pdfCourseRegex = /^(?:Disciplina\s+)?([A-Z0-9]{3,10})\s*-\s*(.+)$/i;
 
   // Turma line: "Turma: A" or "Turma: A Total Vagas: 76"
   const turmaRegex = /^Turma:\s*([A-Z0-9]+)/i;
@@ -34,18 +61,17 @@ export function parseSigaText(rawText) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Ignore page headers / footers like "Página : 1 de 36", "Relação de Turmas...", "qui., 23 jul. 2026"
+    // Ignore page headers / footers
     if (
       line.startsWith('Relação de Turmas') ||
       line.startsWith('DEP ') ||
       line.startsWith('Página :') ||
-      line.includes('Semestre de') ||
       line.includes('qui.,') || line.includes('seg.,') || line.includes('ter.,') || line.includes('qua.,') || line.includes('sex.,') || line.includes('sáb.,')
     ) {
       continue;
     }
 
-    // 1. Check Course Header
+    // 1. Check Course Header ("Disciplina MAT013 - MATEMÁTICA FINANCEIRA")
     if (line.toLowerCase().startsWith('disciplina ')) {
       const match = line.match(/^Disciplina\s+([A-Z0-9]{3,10})\s*-\s*(.+)$/i);
       if (match) {
@@ -133,7 +159,6 @@ export function parseSigaText(rawText) {
     // 5. Check Horário header indicator
     if (line.toLowerCase().startsWith('horário:')) {
       expectingHorarioPDF = true;
-      // Check if time slot is on the same line as "Horário: terça-feira..."
       const inlineSlot = line.replace(/^Horário:\s*/i, '');
       if (inlineSlot) {
         const slotMatch = inlineSlot.match(slotRegex);
@@ -171,5 +196,9 @@ export function parseSigaText(rawText) {
     }
   }
 
-  return Array.from(coursesMap.values());
+  const coursesList = Array.from(coursesMap.values());
+  return {
+    courses: coursesList,
+    period
+  };
 }

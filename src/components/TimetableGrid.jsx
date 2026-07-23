@@ -6,7 +6,8 @@ export default function TimetableGrid({
   selectedTurmas, 
   onRemoveTurma, 
   gridRef,
-  courseColorMap
+  courseColorMap,
+  academicPeriod
 }) {
   const [hourRangeMode, setHourRangeMode] = useState('auto'); // 'auto', 'diurno' (until 18:00), 'completo' (until 23:00)
 
@@ -227,7 +228,7 @@ export default function TimetableGrid({
                   UNIVERSIDADE FEDERAL DE JUIZ DE FORA
                 </h2>
                 <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                  Grade Horária Acadêmica • Período 2026/1
+                  Grade Horária Acadêmica • Período {academicPeriod || '2026/1'}
                 </p>
               </div>
             </div>

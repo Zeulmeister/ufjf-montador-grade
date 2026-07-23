@@ -4,9 +4,10 @@ import { parseSigaText } from '../utils/sigaParser';
 import { extractTextFromPdfFile } from '../utils/pdfExtractor';
 
 export default function SigaImporterModal({ isOpen, onClose, onImportCourses }) {
-  const [activeTab, setActiveTab] = useState('pdf'); // 'pdf' or 'text'
+  const [activeTab, setActiveTab] = useState('pdf');
   const [rawText, setRawText] = useState('');
   const [parsedPreview, setParsedPreview] = useState([]);
+  const [detectedPeriod, setDetectedPeriod] = useState(null);
   const [hasParsed, setHasParsed] = useState(false);
   const [isLoadingPdf, setIsLoadingPdf] = useState(false);
   const [pdfFileName, setPdfFileName] = useState('');
@@ -15,12 +16,12 @@ export default function SigaImporterModal({ isOpen, onClose, onImportCourses }) 
   if (!isOpen) return null;
 
   const handleProcessText = (textToParse) => {
-    const courses = parseSigaText(textToParse);
-    setParsedPreview(courses);
+    const result = parseSigaText(textToParse);
+    setParsedPreview(result.courses);
+    setDetectedPeriod(result.period);
     setHasParsed(true);
   };
 
-  // Handle Multiple PDF Files Upload
   const handlePdfFilesUpload = async (filesList) => {
     const files = Array.from(filesList).filter(f => f.name.toLowerCase().endsWith('.pdf'));
     if (files.length === 0) {
@@ -58,9 +59,10 @@ export default function SigaImporterModal({ isOpen, onClose, onImportCourses }) 
 
   const handleConfirmImport = () => {
     if (parsedPreview.length > 0) {
-      onImportCourses(parsedPreview);
+      onImportCourses(parsedPreview, detectedPeriod);
       setRawText('');
       setParsedPreview([]);
+      setDetectedPeriod(null);
       setHasParsed(false);
       setPdfFileName('');
       onClose();
@@ -112,7 +114,7 @@ export default function SigaImporterModal({ isOpen, onClose, onImportCourses }) 
           </button>
         </div>
 
-        {/* Tabs: PDF Upload vs Copy Paste Text */}
+        {/* Tabs */}
         <div style={{
           display: 'flex',
           borderBottom: '1px solid var(--border-color)',
@@ -150,13 +152,11 @@ export default function SigaImporterModal({ isOpen, onClose, onImportCourses }) 
         <div style={{ padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
           {activeTab === 'pdf' ? (
-            /* PDF Upload Tab */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
                 Você pode selecionar ou arrastar <strong>um ou múltiplos arquivos PDF</strong> do SIGA simultaneamente:
               </p>
 
-              {/* Drag and Drop Zone with MULTIPLE files support */}
               <div 
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
@@ -248,7 +248,6 @@ export default function SigaImporterModal({ isOpen, onClose, onImportCourses }) 
               </div>
             </div>
           ) : (
-            /* Text Paste Tab */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <textarea
                 rows={9}
@@ -322,6 +321,18 @@ export default function SigaImporterModal({ isOpen, onClose, onImportCourses }) 
                     <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-accent)' }}>
                       🎉 Identificadas {parsedPreview.length} disciplinas para importar:
                     </span>
+                    {detectedPeriod && (
+                      <span style={{
+                        fontSize: '0.75rem',
+                        backgroundColor: 'var(--color-primary)',
+                        color: '#fff',
+                        padding: '0.15rem 0.5rem',
+                        borderRadius: 'var(--radius-sm)',
+                        fontWeight: 600
+                      }}>
+                        Período detectado: {detectedPeriod}
+                      </span>
+                    )}
                   </div>
 
                   <div style={{

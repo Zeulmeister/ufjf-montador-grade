@@ -1,11 +1,13 @@
 import React from 'react';
-import { Calendar, Moon, Sun, Download, Trash2, Bookmark, PlusCircle, Upload, HelpCircle } from 'lucide-react';
+import { Calendar, Moon, Sun, Download, Trash2, Bookmark, PlusCircle, Upload, HelpCircle, Edit3 } from 'lucide-react';
 
 export default function Header({ 
   theme, 
   setTheme, 
   selectedCount, 
   totalHours,
+  academicPeriod,
+  onUpdateAcademicPeriod,
   onClear, 
   onExport, 
   onOpenDrafts,
@@ -13,6 +15,13 @@ export default function Header({
   onOpenSigaImporter,
   onOpenTutorial
 }) {
+  const handleEditPeriod = () => {
+    const newP = prompt("Digite o período acadêmico (ex: 2026/3, 2026/1, 3º Semestre):", academicPeriod || '2026/3');
+    if (newP && newP.trim()) {
+      onUpdateAcademicPeriod(newP.trim());
+    }
+  };
+
   return (
     <header style={{
       backgroundColor: 'var(--bg-header)',
@@ -60,14 +69,29 @@ export default function Header({
               alignItems: 'center',
               gap: '0.5rem'
             }}>
-              Montador de Grade Horária <span style={{
-                fontSize: '0.75rem',
-                backgroundColor: 'var(--color-primary)',
-                color: '#fff',
-                padding: '0.15rem 0.5rem',
-                borderRadius: 'var(--radius-md)',
-                fontWeight: 600
-              }}>2026 / 1</span>
+              Montador de Grade Horária 
+              <button
+                onClick={handleEditPeriod}
+                title="Clique para alterar o período acadêmico manualmente"
+                style={{
+                  fontSize: '0.75rem',
+                  backgroundColor: 'var(--color-primary)',
+                  color: '#fff',
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: 'var(--radius-md)',
+                  fontWeight: 700,
+                  letterSpacing: '0.5px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  cursor: 'pointer',
+                  border: 'none',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                {academicPeriod || '2026/3'}
+                <Edit3 size={11} />
+              </button>
             </h1>
             <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
               Universidade Federal de Juiz de Fora • Montagem Inteligente de Horários
