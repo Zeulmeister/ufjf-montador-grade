@@ -1,0 +1,242 @@
+import React from 'react';
+import { Calendar, Moon, Sun, Download, Trash2, Bookmark, PlusCircle, Upload, HelpCircle } from 'lucide-react';
+
+export default function Header({ 
+  theme, 
+  setTheme, 
+  selectedCount, 
+  totalHours,
+  onClear, 
+  onExport, 
+  onOpenDrafts,
+  onOpenAddCustom,
+  onOpenSigaImporter,
+  onOpenTutorial
+}) {
+  return (
+    <header style={{
+      backgroundColor: 'var(--bg-header)',
+      borderBottom: '1px solid var(--border-color)',
+      padding: '1rem 1.5rem',
+      position: 'sticky',
+      top: 0,
+      zIndex: 40,
+      boxShadow: 'var(--shadow-md)'
+    }}>
+      <div style={{
+        maxWidth: '1600px',
+        margin: '0 auto',
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '1rem'
+      }}>
+        
+        {/* Brand / Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: 'var(--radius-lg)',
+            background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            fontWeight: 800,
+            fontSize: '1.25rem',
+            boxShadow: 'var(--shadow-glow)'
+          }}>
+            UFJF
+          </div>
+          <div>
+            <h1 style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: '1.35rem',
+              fontWeight: 800,
+              color: 'var(--text-main)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              Montador de Grade Horária <span style={{
+                fontSize: '0.75rem',
+                backgroundColor: 'var(--color-primary)',
+                color: '#fff',
+                padding: '0.15rem 0.5rem',
+                borderRadius: 'var(--radius-md)',
+                fontWeight: 600
+              }}>2026 / 1</span>
+            </h1>
+            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+              Universidade Federal de Juiz de Fora • Montagem Inteligente de Horários
+            </p>
+          </div>
+        </div>
+
+        {/* Stats summary badges */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          backgroundColor: 'var(--bg-card)',
+          padding: '0.4rem 0.8rem',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--border-color)',
+          fontSize: '0.85rem'
+        }}>
+          <div>
+            <span style={{ color: 'var(--text-muted)' }}>Matérias Na Grade: </span>
+            <strong style={{ color: 'var(--color-accent)' }}>{selectedCount}</strong>
+          </div>
+          <div style={{ height: '14px', width: '1px', backgroundColor: 'var(--border-color)' }} />
+          <div>
+            <span style={{ color: 'var(--text-muted)' }}>Carga Horária Semanal: </span>
+            <strong style={{ color: 'var(--color-secondary)' }}>{totalHours}h</strong>
+          </div>
+        </div>
+
+        {/* Action Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+          
+          <button
+            onClick={onOpenTutorial}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--color-secondary)',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              padding: '0.5rem 0.75rem',
+              borderRadius: 'var(--radius-md)'
+            }}
+            title="Como baixar o PDF do SIGA e usar o aplicativo"
+          >
+            <HelpCircle size={16} />
+            Como Usar (Tutorial)
+          </button>
+
+          <button
+            onClick={onOpenSigaImporter}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: 'rgba(56, 189, 248, 0.15)',
+              color: 'var(--color-accent)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              padding: '0.5rem 0.85rem',
+              borderRadius: 'var(--radius-md)'
+            }}
+            title="Enviar arquivo PDF do SIGA"
+          >
+            <Upload size={16} />
+            Importar PDF do SIGA
+          </button>
+
+          <button
+            onClick={onOpenAddCustom}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-main)',
+              fontSize: '0.875rem',
+              padding: '0.5rem 0.75rem',
+              borderRadius: 'var(--radius-md)'
+            }}
+            title="Adicionar disciplina personalizada"
+          >
+            <PlusCircle size={16} />
+            + Matéria
+          </button>
+
+          <button
+            onClick={onOpenDrafts}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-main)',
+              fontSize: '0.875rem',
+              padding: '0.5rem 0.75rem',
+              borderRadius: 'var(--radius-md)'
+            }}
+            title="Minhas Grades Salvas"
+          >
+            <Bookmark size={16} />
+            Salvas
+          </button>
+
+          <button
+            onClick={onExport}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: 'var(--color-primary)',
+              color: '#ffffff',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              padding: '0.5rem 0.75rem',
+              borderRadius: 'var(--radius-md)'
+            }}
+            title="Exportar imagem da grade"
+          >
+            <Download size={16} />
+            Exportar PNG
+          </button>
+
+          {selectedCount > 0 && (
+            <button
+              onClick={onClear}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                color: '#ef4444',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                fontSize: '0.875rem',
+                padding: '0.5rem 0.75rem',
+                borderRadius: 'var(--radius-md)'
+              }}
+              title="Limpar todas as matérias selecionadas da grade"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-main)',
+              padding: '0.5rem',
+              borderRadius: 'var(--radius-md)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            title={theme === 'dark' ? "Mudar para modo claro" : "Mudar para modo escuro"}
+          >
+            {theme === 'dark' ? <Sun size={18} color="#e5a823" /> : <Moon size={18} color="#0f4c81" />}
+          </button>
+
+        </div>
+
+      </div>
+    </header>
+  );
+}
