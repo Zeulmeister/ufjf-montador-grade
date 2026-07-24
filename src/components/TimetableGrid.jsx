@@ -257,7 +257,7 @@ export default function TimetableGrid({
           {/* Header Row (Days) - STRICT EQUAL COLUMNS minmax(0, 1fr) */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '95px repeat(5, minmax(0, 1fr))',
+            gridTemplateColumns: `95px repeat(${DAYS_OF_WEEK.length}, minmax(0, 1fr))`,
             gap: '5px',
             marginBottom: '5px'
           }}>
@@ -304,7 +304,7 @@ export default function TimetableGrid({
                 key={slot.start}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '95px repeat(5, minmax(0, 1fr))',
+                  gridTemplateColumns: `95px repeat(${DAYS_OF_WEEK.length}, minmax(0, 1fr))`,
                   gap: '5px',
                   minHeight: '44px'
                 }}

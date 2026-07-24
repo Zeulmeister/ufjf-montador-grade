@@ -6,7 +6,8 @@ export const DAYS_OF_WEEK = [
   { id: "ter", label: "Terça", full: "Terça-feira" },
   { id: "qua", label: "Quarta", full: "Quarta-feira" },
   { id: "qui", label: "Quinta", full: "Quinta-feira" },
-  { id: "sex", label: "Sexta", full: "Sexta-feira" }
+  { id: "sex", label: "Sexta", full: "Sexta-feira" },
+  { id: "sab", label: "Sábado", full: "Sábado" }
 ];
 
 export const TIME_SLOTS = [
