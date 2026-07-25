@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, BookOpen, Layers, Globe, X } from 'lucide-react';
+import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, Layers, Globe, X } from 'lucide-react';
 import { DAYS_OF_WEEK } from '../data/coursesData';
 
 export default function CourseCatalog({ 
@@ -10,7 +10,6 @@ export default function CourseCatalog({
   onRemoveTurma,
   checkTurmaConflict,
   onOpenSigaImporter,
-  onOpenCurriculumModal,
   onResetCatalog,
   onOpenTutorial
 }) {
@@ -127,33 +126,12 @@ export default function CourseCatalog({
           }}>
             Catálogo de Disciplinas
           </h2>
-          {curriculumData && (
-            <span style={{ fontSize: '0.75rem', color: 'var(--color-secondary)', fontWeight: 600 }}>
-              🎓 {curriculumData.courseName} ({availablePeriods.length} períodos)
-            </span>
-          )}
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-secondary)', fontWeight: 600 }}>
+            🎓 Engenharia Computacional UFJF
+          </span>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={onOpenCurriculumModal}
-            style={{
-              fontSize: '0.725rem',
-              color: 'var(--color-secondary)',
-              backgroundColor: 'rgba(245, 158, 11, 0.15)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-              padding: '0.25rem 0.6rem',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-            title="Importar ou alterar Matriz Curricular por Períodos"
-          >
-            <BookOpen size={13} /> {curriculumData ? 'Alterar Matriz' : '+ Matriz do Curso'}
-          </button>
-
           {courses.length > 0 && (
             <button
               onClick={onResetCatalog}
@@ -171,7 +149,7 @@ export default function CourseCatalog({
               }}
               title="Apagar todas as matérias importadas no catálogo"
             >
-              <Trash2 size={12} /> Limpar
+              <Trash2 size={12} /> Limpar Catálogo
             </button>
           )}
         </div>
@@ -227,7 +205,7 @@ export default function CourseCatalog({
           {/* Filter Chips */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             
-            {/* Period Filters if Curriculum Data exists */}
+            {/* Period Filters */}
             {availablePeriods.length > 0 && (
               <div style={{
                 backgroundColor: 'var(--bg-main)',
@@ -240,7 +218,7 @@ export default function CourseCatalog({
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Layers size={13} /> Período do Curso:
+                    <Layers size={13} /> Período da Eng. Computacional:
                   </span>
                   {selectedPeriodFilter !== 'all' && (
                     <button
@@ -394,7 +372,7 @@ export default function CourseCatalog({
               Seu Catálogo Está Vazio!
             </h3>
             <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.4rem', lineHeight: '1.4' }}>
-              Baixe a <strong>Relação de Turmas em PDF</strong> no SIGA e envie aqui para carregar todas as disciplinas.
+              Baixe a <strong>Relação de Turmas em PDF</strong> no SIGA e envie aqui para carregar as disciplinas com horários.
             </p>
           </div>
 
@@ -417,25 +395,6 @@ export default function CourseCatalog({
             >
               <Sparkles size={18} />
               Importar PDF do SIGA
-            </button>
-
-            <button
-              onClick={onOpenCurriculumModal}
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                color: 'var(--color-secondary)',
-                border: '1px solid var(--border-color)',
-                fontWeight: 600,
-                fontSize: '0.825rem',
-                padding: '0.5rem 1rem',
-                borderRadius: 'var(--radius-md)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.4rem'
-              }}
-            >
-              <BookOpen size={15} /> Importar Matriz Curricular por Períodos
             </button>
 
             <button
