@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
-import { X, BookOpen, FileText, Check, AlertCircle, Upload, Loader2, Sparkles, Layers } from 'lucide-react';
-import { parseCurriculumText } from '../utils/curriculumParser';
+import { X, BookOpen, FileText, Check, AlertCircle, Upload, Loader2, Sparkles, Layers, Zap } from 'lucide-react';
+import { parseCurriculumText, PRESET_CURRICULUMS } from '../utils/curriculumParser';
 import { extractTextFromPdfFile } from '../utils/pdfExtractor';
 
 export default function CurriculumModal({ isOpen, onClose, onImportCurriculum }) {
-  const [activeTab, setActiveTab] = useState('pdf');
+  const [activeTab, setActiveTab] = useState('preset'); // 'preset', 'pdf', 'text'
   const [rawText, setRawText] = useState('');
   const [parsedPeriods, setParsedPeriods] = useState([]);
-  const [courseNameInput, setCourseNameInput] = useState('Meu Curso');
+  const [courseNameInput, setCourseNameInput] = useState('Engenharia Computacional');
   const [hasParsed, setHasParsed] = useState(false);
   const [isLoadingPdf, setIsLoadingPdf] = useState(false);
   const [pdfFileName, setPdfFileName] = useState('');
   const [dragOver, setDragOver] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleSelectPreset = (preset) => {
+    onImportCurriculum({
+      courseName: preset.courseName,
+      periods: preset.periods
+    });
+    onClose();
+  };
 
   const handleProcessText = (textToParse) => {
     const result = parseCurriculumText(textToParse);
@@ -38,7 +46,7 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
       handleProcessText(text);
     } catch (err) {
       console.error("Erro ao ler PDF da Matriz Curricular:", err);
-      alert("Não foi possível ler o PDF. Tente colar o texto da matriz na aba 'Colar Texto'.");
+      alert("Não foi possível ler o PDF. Tente colar o texto da matriz na aba 'Colar Texto' ou selecione um curso pronto.");
     } finally {
       setIsLoadingPdf(false);
     }
@@ -81,7 +89,7 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
         borderRadius: 'var(--radius-xl)',
         border: '1px solid var(--border-color)',
         width: '100%',
-        maxWidth: '720px',
+        maxWidth: '740px',
         maxHeight: '90vh',
         display: 'flex',
         flexDirection: 'column',
@@ -102,10 +110,10 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
             <BookOpen size={22} color="var(--color-secondary)" />
             <div>
               <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                Importar Matriz Curricular por Períodos
+                Matriz Curricular do Curso por Períodos
               </h2>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Envie o PPC ou Matriz Curricular para categorizar matérias em 1º, 2º, 3º, 4º Períodos
+                Escolha seu curso ou envie o PDF para categorizar em 1º, 2º, 3º... 10º Período
               </p>
             </div>
           </div>
@@ -122,6 +130,21 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
           padding: '0.25rem 1rem 0 1rem',
           gap: '0.5rem'
         }}>
+          <button
+            onClick={() => setActiveTab('preset')}
+            style={{
+              padding: '0.5rem 1rem',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              borderBottom: activeTab === 'preset' ? '2px solid var(--color-secondary)' : '2px solid transparent',
+              color: activeTab === 'preset' ? 'var(--color-secondary)' : 'var(--text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Zap size={14} /> Cursos Pré-Carregados (UFJF)
+          </button>
           <button
             onClick={() => setActiveTab('pdf')}
             style={{
@@ -151,33 +174,79 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
         {/* Content Body */}
         <div style={{ padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
-          {/* Course Name Input */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-              Nome do seu Curso:
-            </label>
-            <input 
-              type="text"
-              value={courseNameInput}
-              onChange={(e) => setCourseNameInput(e.target.value)}
-              placeholder="Ex: Engenharia Elétrica, Química, Matemática, Ciência da Computação..."
-              style={{
-                padding: '0.5rem 0.75rem',
-                backgroundColor: 'var(--bg-main)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-md)',
-                color: 'var(--text-main)',
-                fontSize: '0.85rem',
-                fontWeight: 600
-              }}
-            />
-          </div>
-
-          {activeTab === 'pdf' ? (
+          {activeTab === 'preset' ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                Selecione ou arraste o <strong>PDF da Matriz Curricular / Projeto Pedagógico</strong> do seu curso:
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                Clique no seu curso abaixo para carregar instantaneamente a <strong>Matriz Curricular oficial da UFJF por Períodos (1º ao 10º)</strong>:
               </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {PRESET_CURRICULUMS.map((preset, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => handleSelectPreset(preset)}
+                    style={{
+                      backgroundColor: 'var(--bg-main)',
+                      border: '1px solid var(--color-secondary)',
+                      borderRadius: 'var(--radius-lg)',
+                      padding: '1rem 1.25rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                      boxShadow: 'var(--shadow-sm)',
+                      transition: 'transform 0.15s ease'
+                    }}
+                  >
+                    <div>
+                      <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        🎓 {preset.courseName}
+                      </h3>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                        Inclui 10 Períodos completos • {preset.periods.reduce((acc, p) => acc + p.courses.length, 0)} disciplinas cadastradas (Cálculo I, Algoritmos, Física, etc.)
+                      </p>
+                    </div>
+
+                    <button style={{
+                      backgroundColor: 'var(--color-secondary)',
+                      color: '#0f172a',
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
+                      padding: '0.5rem 0.85rem',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      <Check size={16} /> Carregar Matriz
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : activeTab === 'pdf' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                  Nome do seu Curso:
+                </label>
+                <input 
+                  type="text"
+                  value={courseNameInput}
+                  onChange={(e) => setCourseNameInput(e.target.value)}
+                  placeholder="Ex: Engenharia Computacional, Química, Matemática..."
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    backgroundColor: 'var(--bg-main)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 'var(--radius-md)',
+                    color: 'var(--text-main)',
+                    fontSize: '0.85rem',
+                    fontWeight: 600
+                  }}
+                />
+              </div>
 
               <div 
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -272,7 +341,7 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <textarea
                 rows={9}
-                placeholder="Cole aqui o texto da matriz por períodos (ex: 1º PERÍODO MAT013 - CÁLCULO I ... 2º PERÍODO MAT014 - CÁLCULO II ...)..."
+                placeholder="Cole aqui o texto da matriz por períodos (ex: 1º PERÍODO MAT154 - CÁLCULO I ... 2º PERÍODO MAT156 - CÁLCULO II ...)..."
                 value={rawText}
                 onChange={(e) => {
                   setRawText(e.target.value);
@@ -313,8 +382,8 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
             </div>
           )}
 
-          {/* Parsed Result Preview */}
-          {hasParsed && (
+          {/* Parsed Result Preview for custom PDF/Text */}
+          {hasParsed && activeTab !== 'preset' && (
             <div style={{
               borderTop: '1px solid var(--border-color)',
               paddingTop: '1rem',
@@ -334,7 +403,7 @@ export default function CurriculumModal({ isOpen, onClose, onImportCurriculum })
                   gap: '0.4rem'
                 }}>
                   <AlertCircle size={18} />
-                  Nenhum período ou disciplina identificado. Certifique-se de incluir títulos como "1º Período", "2º Período", etc.
+                  Nenhum período ou disciplina identificado. Você também pode escolher um dos Cursos Pré-Carregados na 1ª aba.
                 </div>
               ) : (
                 <>
