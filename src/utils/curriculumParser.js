@@ -110,33 +110,36 @@ export const PRESET_CURRICULUMS = [
   }
 ];
 
+/**
+ * Multi-Strategy Intelligent Curriculum Parser
+ * Supports any PDF layout from any course (UFJF, UFRJ, USP, etc.)
+ */
 export function parseCurriculumText(rawText) {
   if (!rawText || !rawText.trim()) return [];
 
   const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
   const periodsMap = new Map();
 
-  let currentPeriod = "Disciplinas Gerais";
+  let currentPeriod = "1º Período";
 
-  // Regex to detect Period headers like "1º PERÍODO", "2º SEMESTRE", "PERÍODO 3", "1º Período 360 H"
-  const periodHeaderRegex = /^(?:(\d+)\s*º?\s*(?:PERÍODO|PERIODO|SEMESTRE)|(?:PERÍODO|PERIODO|SEMESTRE)\s*(\d+)|(OPTATIVAS|ELETIVAS|DISCIPLINAS OPTATIVAS))/i;
+  // Comprehensive Regex for Period Headers:
+  // Matches "1º PERÍODO", "2º SEMESTRE", "PERÍODO 3", "1º PERÍODO 360 H", "BLOCO 1", "OPTATIVAS", "ELETIVAS"
+  const periodHeaderRegex = /(?:^|\s)(?:(\d+)\s*º?\s*(?:PERÍODO|PERIODO|SEMESTRE|ETAPA|ANO|MÓDULO)|(?:PERÍODO|PERIODO|SEMESTRE|ETAPA|ANO|MÓDULO|BLOCO)\s*(\d+)|(OPTATIVAS|ELETIVAS|DISCIPLINAS OPTATIVAS|DISCIPLINAS ELETIVAS|COMPLEMENTARES))(?:$|\s|:|-)/i;
 
-  // Regex for course codes matching UFJF format (e.g. MAT154, DCC199, FIS073, DC5199, MAC036)
-  const codeRegex = /\b([A-Z]{2,4}\d{2,4}[A-Z]?)\b/g;
+  // Universal Course Code Regex (e.g. MAT154, DCC001, FIS073, DC5199, MAC036, ADM101, MED001)
+  const codeRegex = /\b([A-Z]{2,5}\s*\d{2,4}[A-Z]?)\b/g;
 
-  // Check if text has grid lines (e.g. "MAT154 MAT155 DCC199 DC5199 FIS122 QUI125 QUI126 ICE001")
-  const codeRows = [];
-
+  // Strategy A: Line-by-line parsing
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // 1. Check for Period Header
+    // Check for Period Header
     const periodMatch = line.match(periodHeaderRegex);
     if (periodMatch) {
       if (periodMatch[1]) {
-        currentPeriod = `${periodMatch[1]}º Período`;
+        currentPeriod = `${parseInt(periodMatch[1], 10)}º Período`;
       } else if (periodMatch[2]) {
-        currentPeriod = `${periodMatch[2]}º Período`;
+        currentPeriod = `${parseInt(periodMatch[2], 10)}º Período`;
       } else if (periodMatch[3]) {
         currentPeriod = "Optativas / Eletivas";
       }
@@ -146,12 +149,13 @@ export function parseCurriculumText(rawText) {
       continue;
     }
 
-    // 2. Check for Course line format: "MAT154 - CÁLCULO I" or "MAT154 CÁLCULO I"
-    const courseMatch = line.match(/^(?:Disciplina\s+)?([A-Z0-9]{3,10})\s*[-:]?\s*(.+)$/i);
-    if (courseMatch) {
-      const code = courseMatch[1].toUpperCase();
-      const name = courseMatch[2].trim();
+    // Check for Course Pattern: "CODE - NAME" or "CODE NAME" or "NAME (CODE)"
+    const courseWithCodeMatch = line.match(/^(?:Disciplina\s+)?([A-Z]{2,5}\s*\d{2,4}[A-Z]?)\s*[-:\s]\s*(.+)$/i);
+    if (courseWithCodeMatch) {
+      const code = courseWithCodeMatch[1].replace(/\s+/g, '').toUpperCase();
+      const name = courseWithCodeMatch[2].trim();
 
+      // Filter out false positive headers
       if (!code.startsWith('TURMA') && !code.startsWith('PAGE') && !code.startsWith('PAGINA') && !name.toLowerCase().startsWith('vagas')) {
         if (!periodsMap.has(currentPeriod)) {
           periodsMap.set(currentPeriod, []);
@@ -164,46 +168,51 @@ export function parseCurriculumText(rawText) {
         continue;
       }
     }
+  }
 
-    // 3. Check for row containing multiple course codes (PDF OCR Grid layout)
-    const matches = [...line.matchAll(codeRegex)];
-    if (matches.length >= 3) {
-      codeRows.push(matches.map(m => m[1].toUpperCase()));
+  // Strategy B: Grid PDF Table Extraction (if Strategy A yielded no structured courses)
+  if (Array.from(periodsMap.values()).every(arr => arr.length === 0)) {
+    const codeRows = [];
+
+    lines.forEach(line => {
+      const matches = [...line.matchAll(codeRegex)];
+      if (matches.length >= 2) {
+        codeRows.push(matches.map(m => m[1].replace(/\s+/g, '').toUpperCase()));
+      }
+    });
+
+    if (codeRows.length > 0) {
+      codeRows.forEach((rowCodes, idx) => {
+        const periodName = `${idx + 1}º Período`;
+        const courseItems = rowCodes.map(code => ({
+          code,
+          name: code, // Fallback name
+          period: periodName
+        }));
+        periodsMap.set(periodName, courseItems);
+      });
+
+      // Match names from document text stream
+      lines.forEach(line => {
+        codeRows.flat().forEach(code => {
+          if (line.includes(code)) {
+            const parts = line.split(code);
+            if (parts[1] && parts[1].trim().length > 3) {
+              const candidate = parts[1].trim().replace(/^[-:\s]+/, '');
+              periodsMap.forEach(items => {
+                const item = items.find(c => c.code === code);
+                if (item && (item.name === code || item.name.length < 3)) {
+                  item.name = candidate;
+                }
+              });
+            }
+          }
+        });
+      });
     }
   }
 
-  // If grid rows were detected from OCR table: assign row 1 -> 1º Período, row 2 -> 2º Período...
-  if (codeRows.length >= 3 && Array.from(periodsMap.values()).every(arr => arr.length === 0)) {
-    codeRows.forEach((rowCodes, idx) => {
-      const periodName = `${idx + 1}º Período`;
-      const courseItems = rowCodes.map(code => ({
-        code,
-        name: code, // Will be updated if names are matched
-        period: periodName
-      }));
-      periodsMap.set(periodName, courseItems);
-    });
-
-    // Try to pair names from rawText
-    lines.forEach(l => {
-      codeRows.flat().forEach(code => {
-        if (l.includes(code)) {
-          const parts = l.split(code);
-          if (parts[1] && parts[1].trim().length > 3) {
-            const possibleName = parts[1].trim().replace(/^[-:\s]+/, '');
-            periodsMap.forEach(items => {
-              const item = items.find(c => c.code === code);
-              if (item && item.name === code) {
-                item.name = possibleName;
-              }
-            });
-          }
-        }
-      });
-    });
-  }
-
-  // Convert map to structured array sorted logically
+  // Convert map to structured array
   const result = Array.from(periodsMap.entries()).map(([periodName, courses]) => ({
     periodName,
     courses

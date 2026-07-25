@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, BookOpen, Layers } from 'lucide-react';
+import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, BookOpen, Layers, Globe, X } from 'lucide-react';
 import { DAYS_OF_WEEK } from '../data/coursesData';
 
 export default function CourseCatalog({ 
@@ -68,8 +68,8 @@ export default function CourseCatalog({
 
       if (!matchesSearch) return false;
 
-      // Filter by period in curriculum
-      if (selectedPeriodFilter !== 'all') {
+      // If user typed a search term, OVERRIDE period filter so they can find ANY course instantly!
+      if (!normSearch && selectedPeriodFilter !== 'all') {
         const coursePeriod = coursePeriodMap[course.code.toUpperCase()];
         if (coursePeriod !== selectedPeriodFilter) return false;
       }
@@ -193,7 +193,7 @@ export default function CourseCatalog({
             />
             <input 
               type="text" 
-              placeholder="Digite o código (ex: MAT013), nome ou professor..."
+              placeholder="Pesquise QUALQUER matéria por código ou nome..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -206,6 +206,22 @@ export default function CourseCatalog({
                 fontSize: '0.85rem'
               }}
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
 
           {/* Filter Chips */}
@@ -222,9 +238,27 @@ export default function CourseCatalog({
                 flexDirection: 'column',
                 gap: '0.35rem'
               }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Layers size={13} /> Filtrar por Período do Curso:
-                </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Layers size={13} /> Período do Curso:
+                  </span>
+                  {selectedPeriodFilter !== 'all' && (
+                    <button
+                      onClick={() => setSelectedPeriodFilter('all')}
+                      style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--color-accent)',
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '2px'
+                      }}
+                    >
+                      <Globe size={11} /> Ver Todas ({courses.length})
+                    </button>
+                  )}
+                </div>
+
                 <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setSelectedPeriodFilter('all')}
@@ -238,7 +272,7 @@ export default function CourseCatalog({
                       border: '1px solid var(--border-color)'
                     }}
                   >
-                    Todos ({courses.length})
+                    Todas ({courses.length})
                   </button>
 
                   {availablePeriods.map(pName => {
@@ -433,13 +467,28 @@ export default function CourseCatalog({
               textAlign: 'center',
               padding: '2rem 1rem',
               color: 'var(--text-muted)',
-              fontSize: '0.85rem'
+              fontSize: '0.85rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem'
             }}>
-              Nenhuma disciplina encontrada para o filtro selecionado.
+              <span>Nenhuma disciplina encontrada para este período.</span>
+              <button
+                onClick={() => setSelectedPeriodFilter('all')}
+                style={{
+                  fontSize: '0.775rem',
+                  color: 'var(--color-accent)',
+                  fontWeight: 700,
+                  textDecoration: 'underline'
+                }}
+              >
+                Clique aqui para ver todas as matérias do catálogo ({courses.length})
+              </button>
             </div>
           ) : (
             filteredCourses.map(course => {
-              const isSearching = searchTerm.trim().length > 0 || selectedPeriodFilter !== 'all';
+              const isSearching = searchTerm.trim().length > 0;
               const isExpanded = isSearching || expandedCourse === course.code;
               const hasAnySelected = course.turmas.some(t => selectedTurmaIds.has(t.id));
               const coursePeriod = coursePeriodMap[course.code.toUpperCase()];
