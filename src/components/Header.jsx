@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Moon, Sun, Download, Trash2, Bookmark, PlusCircle, Upload, HelpCircle, Edit3 } from 'lucide-react';
+import { Calendar, Moon, Sun, Download, Trash2, Bookmark, PlusCircle, Upload, HelpCircle, Edit3, BookOpen } from 'lucide-react';
 
 export default function Header({ 
   theme, 
@@ -13,6 +13,7 @@ export default function Header({
   onOpenDrafts,
   onOpenAddCustom,
   onOpenSigaImporter,
+  onOpenCurriculum,
   onOpenTutorial
 }) {
   const handleEditPeriod = () => {
@@ -141,7 +142,27 @@ export default function Header({
             title="Como baixar o PDF do SIGA e usar o aplicativo"
           >
             <HelpCircle size={16} />
-            Como Usar (Tutorial)
+            Tutorial
+          </button>
+
+          <button
+            onClick={onOpenCurriculum}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: 'rgba(245, 158, 11, 0.15)',
+              color: 'var(--color-secondary)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              padding: '0.5rem 0.85rem',
+              borderRadius: 'var(--radius-md)'
+            }}
+            title="Importar Matriz Curricular por Períodos do seu curso"
+          >
+            <BookOpen size={16} />
+            Matriz do Curso
           </button>
 
           <button
@@ -158,10 +179,10 @@ export default function Header({
               padding: '0.5rem 0.85rem',
               borderRadius: 'var(--radius-md)'
             }}
-            title="Enviar arquivo PDF do SIGA"
+            title="Enviar arquivo PDF do SIGA com as turmas oferecidas"
           >
             <Upload size={16} />
-            Importar PDF do SIGA
+            Importar PDF (SIGA)
           </button>
 
           <button

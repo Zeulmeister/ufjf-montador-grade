@@ -7,6 +7,7 @@ import CourseCatalog from './components/CourseCatalog';
 import CustomCourseModal from './components/CustomCourseModal';
 import SavedDraftsModal from './components/SavedDraftsModal';
 import SigaImporterModal from './components/SigaImporterModal';
+import CurriculumModal from './components/CurriculumModal';
 import TutorialModal from './components/TutorialModal';
 
 import { initialCourses, COURSE_COLORS } from './data/coursesData';
@@ -21,6 +22,12 @@ export default function App() {
   const [courses, setCourses] = useState(() => {
     const savedCustom = localStorage.getItem('ufjf_custom_courses');
     return savedCustom ? JSON.parse(savedCustom) : initialCourses;
+  });
+
+  // Imported Curriculum Matrix Data
+  const [curriculumData, setCurriculumData] = useState(() => {
+    const saved = localStorage.getItem('ufjf_curriculum_data');
+    return saved ? JSON.parse(saved) : null;
   });
 
   // Active selected turmas in schedule: array of { course, turma }
@@ -39,6 +46,7 @@ export default function App() {
   const [isAddCustomOpen, setIsAddCustomOpen] = useState(false);
   const [isDraftsOpen, setIsDraftsOpen] = useState(false);
   const [isSigaImporterOpen, setIsSigaImporterOpen] = useState(false);
+  const [isCurriculumOpen, setIsCurriculumOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
 
   const gridRef = useRef(null);
@@ -66,6 +74,13 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('ufjf_academic_period', academicPeriod);
   }, [academicPeriod]);
+
+  // Persist curriculum data
+  useEffect(() => {
+    if (curriculumData) {
+      localStorage.setItem('ufjf_curriculum_data', JSON.stringify(curriculumData));
+    }
+  }, [curriculumData]);
 
   // Map each course code to a unique color index
   const courseColorMap = useMemo(() => {
@@ -217,6 +232,11 @@ export default function App() {
     });
   };
 
+  // Import Curriculum Data by Periods
+  const handleImportCurriculum = (data) => {
+    setCurriculumData(data);
+  };
+
   // Save current draft
   const handleSaveCurrentDraft = (name) => {
     const newDraft = {
@@ -251,6 +271,7 @@ export default function App() {
         onOpenDrafts={() => setIsDraftsOpen(true)}
         onOpenAddCustom={() => setIsAddCustomOpen(true)}
         onOpenSigaImporter={() => setIsSigaImporterOpen(true)}
+        onOpenCurriculum={() => setIsCurriculumOpen(true)}
         onOpenTutorial={() => setIsTutorialOpen(true)}
       />
 
@@ -271,10 +292,12 @@ export default function App() {
         <CourseCatalog 
           courses={courses}
           selectedTurmas={selectedTurmas}
+          curriculumData={curriculumData}
           onAddTurma={handleAddTurma}
           onRemoveTurma={handleRemoveTurma}
           checkTurmaConflict={checkTurmaConflict}
           onOpenSigaImporter={() => setIsSigaImporterOpen(true)}
+          onOpenCurriculumModal={() => setIsCurriculumOpen(true)}
           onResetCatalog={handleResetCatalog}
           onOpenTutorial={() => setIsTutorialOpen(true)}
         />
@@ -309,6 +332,12 @@ export default function App() {
         isOpen={isSigaImporterOpen}
         onClose={() => setIsSigaImporterOpen(false)}
         onImportCourses={handleImportSigaCourses}
+      />
+
+      <CurriculumModal 
+        isOpen={isCurriculumOpen}
+        onClose={() => setIsCurriculumOpen(false)}
+        onImportCurriculum={handleImportCurriculum}
       />
 
       <TutorialModal 

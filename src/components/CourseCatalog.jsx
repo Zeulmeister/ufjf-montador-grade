@@ -1,20 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle } from 'lucide-react';
+import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, BookOpen, Layers } from 'lucide-react';
 import { DAYS_OF_WEEK } from '../data/coursesData';
 
 export default function CourseCatalog({ 
   courses, 
   selectedTurmas, 
+  curriculumData,
   onAddTurma, 
   onRemoveTurma,
   checkTurmaConflict,
   onOpenSigaImporter,
+  onOpenCurriculumModal,
   onResetCatalog,
   onOpenTutorial
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDayFilter, setSelectedDayFilter] = useState('all');
   const [selectedShiftFilter, setSelectedShiftFilter] = useState('all');
+  const [selectedPeriodFilter, setSelectedPeriodFilter] = useState('all');
   const [expandedCourse, setExpandedCourse] = useState(null);
 
   const selectedTurmaIds = useMemo(() => {
@@ -29,6 +32,25 @@ export default function CourseCatalog({
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '');
   };
+
+  // Map each course code to its period name in the imported curriculum
+  const coursePeriodMap = useMemo(() => {
+    const map = {};
+    if (curriculumData && curriculumData.periods) {
+      curriculumData.periods.forEach(p => {
+        p.courses.forEach(c => {
+          map[c.code.toUpperCase()] = p.periodName;
+        });
+      });
+    }
+    return map;
+  }, [curriculumData]);
+
+  // Available periods list from curriculum
+  const availablePeriods = useMemo(() => {
+    if (!curriculumData || !curriculumData.periods) return [];
+    return curriculumData.periods.map(p => p.periodName);
+  }, [curriculumData]);
 
   // Filtered courses logic
   const filteredCourses = useMemo(() => {
@@ -45,6 +67,12 @@ export default function CourseCatalog({
         normTeachers.includes(normSearch);
 
       if (!matchesSearch) return false;
+
+      // Filter by period in curriculum
+      if (selectedPeriodFilter !== 'all') {
+        const coursePeriod = coursePeriodMap[course.code.toUpperCase()];
+        if (coursePeriod !== selectedPeriodFilter) return false;
+      }
 
       // Filter by day if selected
       if (selectedDayFilter !== 'all') {
@@ -68,7 +96,7 @@ export default function CourseCatalog({
 
       return true;
     });
-  }, [courses, searchTerm, selectedDayFilter, selectedShiftFilter]);
+  }, [courses, searchTerm, selectedDayFilter, selectedShiftFilter, selectedPeriodFilter, coursePeriodMap]);
 
   return (
     <div style={{
@@ -86,33 +114,56 @@ export default function CourseCatalog({
     }}>
       
       {/* Header title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{
-          fontFamily: 'var(--font-heading)',
-          fontSize: '1.1rem',
-          fontWeight: 700,
-          color: 'var(--text-main)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.4rem'
-        }}>
-          Catálogo de Disciplinas
-        </h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div>
+          <h2 style={{
+            fontFamily: 'var(--font-heading)',
+            fontSize: '1.1rem',
+            fontWeight: 700,
+            color: 'var(--text-main)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem'
+          }}>
+            Catálogo de Disciplinas
+          </h2>
+          {curriculumData && (
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-secondary)', fontWeight: 600 }}>
+              🎓 {curriculumData.courseName} ({availablePeriods.length} períodos)
+            </span>
+          )}
+        </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {courses.length} disciplinas
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={onOpenCurriculumModal}
+            style={{
+              fontSize: '0.725rem',
+              color: 'var(--color-secondary)',
+              backgroundColor: 'rgba(245, 158, 11, 0.15)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              padding: '0.25rem 0.6rem',
+              borderRadius: 'var(--radius-md)',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+            title="Importar ou alterar Matriz Curricular por Períodos"
+          >
+            <BookOpen size={13} /> {curriculumData ? 'Alterar Matriz' : '+ Matriz do Curso'}
+          </button>
+
           {courses.length > 0 && (
             <button
               onClick={onResetCatalog}
               style={{
-                fontSize: '0.7rem',
+                fontSize: '0.725rem',
                 color: '#ef4444',
                 backgroundColor: 'rgba(239, 68, 68, 0.15)',
                 border: '1px solid rgba(239, 68, 68, 0.3)',
-                padding: '0.2rem 0.5rem',
-                borderRadius: 'var(--radius-sm)',
+                padding: '0.25rem 0.5rem',
+                borderRadius: 'var(--radius-md)',
                 fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
@@ -120,7 +171,7 @@ export default function CourseCatalog({
               }}
               title="Apagar todas as matérias importadas no catálogo"
             >
-              <Trash2 size={12} /> Limpar Catálogo
+              <Trash2 size={12} /> Limpar
             </button>
           )}
         </div>
@@ -160,7 +211,61 @@ export default function CourseCatalog({
           {/* Filter Chips */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             
-            {/* Shifts */}
+            {/* Period Filters if Curriculum Data exists */}
+            {availablePeriods.length > 0 && (
+              <div style={{
+                backgroundColor: 'var(--bg-main)',
+                padding: '0.5rem',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-color)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.35rem'
+              }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Layers size={13} /> Filtrar por Período do Curso:
+                </span>
+                <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => setSelectedPeriodFilter('all')}
+                    style={{
+                      fontSize: '0.725rem',
+                      padding: '0.2rem 0.55rem',
+                      borderRadius: 'var(--radius-sm)',
+                      fontWeight: 600,
+                      backgroundColor: selectedPeriodFilter === 'all' ? 'var(--color-secondary)' : 'var(--bg-card)',
+                      color: selectedPeriodFilter === 'all' ? '#0f172a' : 'var(--text-muted)',
+                      border: '1px solid var(--border-color)'
+                    }}
+                  >
+                    Todos ({courses.length})
+                  </button>
+
+                  {availablePeriods.map(pName => {
+                    const countInPeriod = courses.filter(c => coursePeriodMap[c.code.toUpperCase()] === pName).length;
+                    return (
+                      <button
+                        key={pName}
+                        onClick={() => setSelectedPeriodFilter(pName)}
+                        style={{
+                          fontSize: '0.725rem',
+                          padding: '0.2rem 0.55rem',
+                          borderRadius: 'var(--radius-sm)',
+                          fontWeight: 600,
+                          backgroundColor: selectedPeriodFilter === pName ? 'var(--color-secondary)' : 'var(--bg-card)',
+                          color: selectedPeriodFilter === pName ? '#0f172a' : 'var(--text-muted)',
+                          border: '1px solid var(--border-color)'
+                        }}
+                      >
+                        {pName} {countInPeriod > 0 ? `(${countInPeriod})` : ''}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Shifts & Days */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '3px' }}>
                 <Filter size={12} /> Turno:
@@ -186,11 +291,8 @@ export default function CourseCatalog({
                   {shift.label}
                 </button>
               ))}
-            </div>
 
-            {/* Days */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Dia:</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '0.4rem' }}>Dia:</span>
               <button
                 onClick={() => setSelectedDayFilter('all')}
                 style={{
@@ -284,6 +386,25 @@ export default function CourseCatalog({
             </button>
 
             <button
+              onClick={onOpenCurriculumModal}
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                color: 'var(--color-secondary)',
+                border: '1px solid var(--border-color)',
+                fontWeight: 600,
+                fontSize: '0.825rem',
+                padding: '0.5rem 1rem',
+                borderRadius: 'var(--radius-md)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem'
+              }}
+            >
+              <BookOpen size={15} /> Importar Matriz Curricular por Períodos
+            </button>
+
+            <button
               onClick={onOpenTutorial}
               style={{
                 backgroundColor: 'var(--bg-card)',
@@ -314,13 +435,14 @@ export default function CourseCatalog({
               color: 'var(--text-muted)',
               fontSize: '0.85rem'
             }}>
-              Nenhuma disciplina encontrada para "{searchTerm}".
+              Nenhuma disciplina encontrada para o filtro selecionado.
             </div>
           ) : (
             filteredCourses.map(course => {
-              const isSearching = searchTerm.trim().length > 0;
+              const isSearching = searchTerm.trim().length > 0 || selectedPeriodFilter !== 'all';
               const isExpanded = isSearching || expandedCourse === course.code;
               const hasAnySelected = course.turmas.some(t => selectedTurmaIds.has(t.id));
+              const coursePeriod = coursePeriodMap[course.code.toUpperCase()];
 
               return (
                 <div 
@@ -346,7 +468,7 @@ export default function CourseCatalog({
                     }}
                   >
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                         <span style={{
                           fontSize: '0.8rem',
                           fontWeight: 700,
@@ -357,6 +479,18 @@ export default function CourseCatalog({
                         }}>
                           {course.code}
                         </span>
+                        {coursePeriod && (
+                          <span style={{
+                            fontSize: '0.68rem',
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            color: 'var(--color-secondary)',
+                            padding: '0.1rem 0.4rem',
+                            borderRadius: 'var(--radius-sm)',
+                            fontWeight: 700
+                          }}>
+                            {coursePeriod}
+                          </span>
+                        )}
                         {hasAnySelected && (
                           <span style={{
                             fontSize: '0.68rem',
