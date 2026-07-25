@@ -9,7 +9,7 @@ export default function TimetableGrid({
   courseColorMap,
   academicPeriod
 }) {
-  const [hourRangeMode, setHourRangeMode] = useState('auto'); // 'auto', 'diurno' (until 18:00), 'completo' (until 23:00)
+  const [hourRangeMode, setHourRangeMode] = useState('completo'); // 'completo' (until 23:00), 'diurno' (until 18:00), 'auto'
 
   // Convert HH:mm to minutes from midnight
   const timeToMinutes = (tStr) => {
