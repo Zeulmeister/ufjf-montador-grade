@@ -176,7 +176,7 @@ export default function TimetableGrid({
         </div>
       </div>
 
-      {/* Grid container with STRICT EQUAL COLUMNS (minmax(0, 1fr)) */}
+      {/* Grid container with STRICT EQUAL COLUMNS and FIXED EQUAL ROW HEIGHTS */}
       <div 
         ref={gridRef}
         style={{
@@ -228,7 +228,7 @@ export default function TimetableGrid({
                   UNIVERSIDADE FEDERAL DE JUIZ DE FORA
                 </h2>
                 <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                  Grade Horária Acadêmica • Período {academicPeriod || '2026/1'}
+                  Grade Horária Acadêmica • Período {academicPeriod || '2026/3'}
                 </p>
               </div>
             </div>
@@ -254,7 +254,7 @@ export default function TimetableGrid({
             </div>
           </div>
 
-          {/* Header Row (Days) - STRICT EQUAL COLUMNS minmax(0, 1fr) */}
+          {/* Header Row (Days) */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: `95px repeat(${DAYS_OF_WEEK.length}, minmax(0, 1fr))`,
@@ -297,7 +297,7 @@ export default function TimetableGrid({
             ))}
           </div>
 
-          {/* Time Slot Rows - STRICT EQUAL COLUMNS minmax(0, 1fr) */}
+          {/* Time Slot Rows - STRICT EQUAL FIXED ROW HEIGHT (54px) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
             {visibleTimeSlots.map((slot) => (
               <div 
@@ -306,7 +306,8 @@ export default function TimetableGrid({
                   display: 'grid',
                   gridTemplateColumns: `95px repeat(${DAYS_OF_WEEK.length}, minmax(0, 1fr))`,
                   gap: '5px',
-                  minHeight: '44px'
+                  height: '54px',
+                  maxHeight: '54px'
                 }}
               >
                 {/* Time Label Column */}
@@ -320,7 +321,9 @@ export default function TimetableGrid({
                   fontSize: '0.725rem',
                   fontWeight: 600,
                   color: 'var(--text-muted)',
-                  border: '1px solid var(--border-color)'
+                  border: '1px solid var(--border-color)',
+                  height: '100%',
+                  boxSizing: 'border-box'
                 }}>
                   <span>{slot.start} - {slot.end}</span>
                 </div>
@@ -344,12 +347,14 @@ export default function TimetableGrid({
                           ? '2px dashed #ef4444' 
                           : '1px solid var(--border-color)',
                         position: 'relative',
-                        padding: '3px',
+                        padding: '2px 3px',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '3px',
+                        gap: '2px',
                         justifyContent: 'center',
+                        height: '100%',
                         overflow: 'hidden', // Prevents tile overflow
+                        boxSizing: 'border-box',
                         transition: 'background-color 0.2s ease'
                       }}
                     >
@@ -359,7 +364,7 @@ export default function TimetableGrid({
                           alignItems: 'center',
                           gap: '3px',
                           color: '#ef4444',
-                          fontSize: '0.65rem',
+                          fontSize: '0.625rem',
                           fontWeight: 700,
                           backgroundColor: 'rgba(239, 68, 68, 0.2)',
                           padding: '1px 3px',
@@ -383,20 +388,22 @@ export default function TimetableGrid({
                               backgroundColor: colorObj.hex,
                               color: '#ffffff',
                               borderRadius: 'var(--radius-md)',
-                              padding: '4px 6px',
+                              padding: '3px 5px',
                               fontSize: '0.725rem',
                               boxShadow: 'var(--shadow-sm)',
                               position: 'relative',
                               display: 'flex',
                               flexDirection: 'column',
-                              gap: '1px',
+                              justifyContent: 'space-between',
+                              height: '100%',
                               borderLeft: `3px solid ${colorObj.darkBorder}`,
-                              overflow: 'hidden'
+                              overflow: 'hidden',
+                              boxSizing: 'border-box'
                             }}
                           >
                             {/* Header: Code + Turma + Remove */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <strong style={{ fontSize: '0.775rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                              <strong style={{ fontSize: '0.75rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
                                 {course.code} (T.{turma.turma})
                               </strong>
                               <button
@@ -416,7 +423,7 @@ export default function TimetableGrid({
 
                             {/* Abbreviated Name snippet strictly truncated to single line */}
                             <span style={{ 
-                              fontSize: '0.675rem', 
+                              fontSize: '0.65rem', 
                               opacity: 0.95, 
                               whiteSpace: 'nowrap', 
                               overflow: 'hidden', 
@@ -431,8 +438,7 @@ export default function TimetableGrid({
                               display: 'flex', 
                               alignItems: 'center',
                               justifyContent: 'space-between',
-                              marginTop: '1px', 
-                              fontSize: '0.625rem', 
+                              fontSize: '0.6rem', 
                               opacity: 0.9,
                               whiteSpace: 'nowrap',
                               overflow: 'hidden'
