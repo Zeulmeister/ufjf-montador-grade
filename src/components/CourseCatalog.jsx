@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, Layers, Globe, X } from 'lucide-react';
+import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, Layers, Globe, X, GraduationCap } from 'lucide-react';
 import { DAYS_OF_WEEK } from '../data/coursesData';
 
 export default function CourseCatalog({ 
@@ -17,6 +17,7 @@ export default function CourseCatalog({
   const [selectedDayFilter, setSelectedDayFilter] = useState('all');
   const [selectedShiftFilter, setSelectedShiftFilter] = useState('all');
   const [selectedPeriodFilter, setSelectedPeriodFilter] = useState('all');
+  const [showEngCompFilter, setShowEngCompFilter] = useState(false);
   const [expandedCourse, setExpandedCourse] = useState(null);
 
   const selectedTurmaIds = useMemo(() => {
@@ -67,8 +68,8 @@ export default function CourseCatalog({
 
       if (!matchesSearch) return false;
 
-      // If user typed a search term, OVERRIDE period filter so they can find ANY course instantly!
-      if (!normSearch && selectedPeriodFilter !== 'all') {
+      // Filter by period ONLY IF EngComp filter is toggled ON and user didn't type a specific search term
+      if (showEngCompFilter && !normSearch && selectedPeriodFilter !== 'all') {
         const coursePeriod = coursePeriodMap[course.code.toUpperCase()];
         if (coursePeriod !== selectedPeriodFilter) return false;
       }
@@ -95,7 +96,7 @@ export default function CourseCatalog({
 
       return true;
     });
-  }, [courses, searchTerm, selectedDayFilter, selectedShiftFilter, selectedPeriodFilter, coursePeriodMap]);
+  }, [courses, searchTerm, selectedDayFilter, selectedShiftFilter, selectedPeriodFilter, showEngCompFilter, coursePeriodMap]);
 
   return (
     <div style={{
@@ -126,12 +127,38 @@ export default function CourseCatalog({
           }}>
             Catálogo de Disciplinas
           </h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--color-secondary)', fontWeight: 600 }}>
-            🎓 Engenharia Computacional UFJF
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            {courses.length} disciplinas importadas
           </span>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+          {/* Optional Engenharia Computacional Filter Toggle */}
+          <button
+            onClick={() => {
+              const nextState = !showEngCompFilter;
+              setShowEngCompFilter(nextState);
+              if (!nextState) setSelectedPeriodFilter('all');
+            }}
+            style={{
+              fontSize: '0.725rem',
+              color: showEngCompFilter ? '#0f172a' : 'var(--color-secondary)',
+              backgroundColor: showEngCompFilter ? 'var(--color-secondary)' : 'rgba(245, 158, 11, 0.12)',
+              border: '1px solid rgba(245, 158, 11, 0.4)',
+              padding: '0.25rem 0.6rem',
+              borderRadius: 'var(--radius-md)',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+              boxShadow: showEngCompFilter ? 'var(--shadow-sm)' : 'none'
+            }}
+            title="Clique para ativar/desativar o filtro por períodos da Engenharia Computacional"
+          >
+            <GraduationCap size={14} /> Eng. Computacional {showEngCompFilter ? '✓' : ''}
+          </button>
+
           {courses.length > 0 && (
             <button
               onClick={onResetCatalog}
@@ -149,7 +176,7 @@ export default function CourseCatalog({
               }}
               title="Apagar todas as matérias importadas no catálogo"
             >
-              <Trash2 size={12} /> Limpar Catálogo
+              <Trash2 size={12} /> Limpar
             </button>
           )}
         </div>
@@ -171,7 +198,7 @@ export default function CourseCatalog({
             />
             <input 
               type="text" 
-              placeholder="Pesquise QUALQUER matéria por código ou nome..."
+              placeholder="Pesquise por código (ex: MAT013), nome ou professor..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -205,20 +232,20 @@ export default function CourseCatalog({
           {/* Filter Chips */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             
-            {/* Period Filters */}
-            {availablePeriods.length > 0 && (
+            {/* Period Filters IF user toggled Eng. Computacional Filter */}
+            {showEngCompFilter && availablePeriods.length > 0 && (
               <div style={{
                 backgroundColor: 'var(--bg-main)',
                 padding: '0.5rem',
                 borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-color)',
+                border: '1px solid var(--color-secondary)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.35rem'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Layers size={13} /> Período da Eng. Computacional:
+                    <Layers size={13} /> Períodos - Engenharia Computacional:
                   </span>
                   {selectedPeriodFilter !== 'all' && (
                     <button
@@ -232,7 +259,7 @@ export default function CourseCatalog({
                         gap: '2px'
                       }}
                     >
-                      <Globe size={11} /> Ver Todas ({courses.length})
+                      <Globe size={11} /> Ver Todas
                     </button>
                   )}
                 </div>
@@ -487,7 +514,7 @@ export default function CourseCatalog({
                         }}>
                           {course.code}
                         </span>
-                        {coursePeriod && (
+                        {showEngCompFilter && coursePeriod && (
                           <span style={{
                             fontSize: '0.68rem',
                             backgroundColor: 'rgba(245, 158, 11, 0.2)',
