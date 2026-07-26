@@ -9,6 +9,7 @@
   --color-primary-hover: #0a3861;
   --color-secondary: #e5a823;
   --color-accent: #38bdf8;
+  --color-success: #10b981;
   
   --bg-main: #0f172a;
   --bg-card: #1e293b;
@@ -98,24 +99,16 @@ button {
 }
 .light-theme .glass-panel {
   background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Interactive Empty Cell Hover */
+.empty-grid-cell:hover {
+  background-color: rgba(56, 189, 248, 0.12) !important;
+  border-color: var(--color-accent) !important;
 }
 
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(229, 168, 35, 0.3); }
-  50% { box-shadow: 0 0 25px rgba(229, 168, 35, 0.6); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.glow-ufjf {
-  animation: pulseGlow 3s infinite ease-in-out;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

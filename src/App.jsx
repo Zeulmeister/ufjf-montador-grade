@@ -8,6 +8,7 @@ import CustomCourseModal from './components/CustomCourseModal';
 import SavedDraftsModal from './components/SavedDraftsModal';
 import SigaImporterModal from './components/SigaImporterModal';
 import HistoricoModal from './components/HistoricoModal';
+import SlotPickerModal from './components/SlotPickerModal';
 import TutorialModal from './components/TutorialModal';
 
 import { initialCourses, COURSE_COLORS } from './data/coursesData';
@@ -57,6 +58,7 @@ export default function App() {
   const [isSigaImporterOpen, setIsSigaImporterOpen] = useState(false);
   const [isHistoricoOpen, setIsHistoricoOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [targetSlot, setTargetSlot] = useState(null);
 
   const gridRef = useRef(null);
 
@@ -343,6 +345,7 @@ export default function App() {
           gridRef={gridRef}
           courseColorMap={courseColorMap}
           academicPeriod={academicPeriod}
+          onSlotClick={(dayId, slot) => setTargetSlot({ dayId, ...slot })}
         />
 
       </main>
@@ -378,6 +381,18 @@ export default function App() {
         isOpen={isTutorialOpen}
         onClose={() => setIsTutorialOpen(false)}
         onOpenImporter={() => setIsSigaImporterOpen(true)}
+      />
+
+      <SlotPickerModal
+        isOpen={!!targetSlot}
+        onClose={() => setTargetSlot(null)}
+        targetSlot={targetSlot}
+        courses={courses}
+        selectedTurmas={selectedTurmas}
+        completedCourseCodes={completedCourseCodes}
+        hideCompleted={hideCompleted}
+        onAddTurma={handleAddTurma}
+        checkTurmaConflict={checkTurmaConflict}
       />
 
     </div>

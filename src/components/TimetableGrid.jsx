@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { DAYS_OF_WEEK, TIME_SLOTS, COURSE_COLORS } from '../data/coursesData';
-import { AlertTriangle, X, MapPin, User, Clock, Eye } from 'lucide-react';
+import { AlertTriangle, X, MapPin, User, Clock, Eye, Plus } from 'lucide-react';
 
 export default function TimetableGrid({ 
   selectedTurmas, 
   onRemoveTurma, 
   gridRef,
   courseColorMap,
-  academicPeriod
+  academicPeriod,
+  onSlotClick
 }) {
   const [hourRangeMode, setHourRangeMode] = useState('completo'); // 'completo' (until 23:00), 'diurno' (until 18:00), 'auto'
 
@@ -336,6 +337,13 @@ export default function TimetableGrid({
                   return (
                     <div 
                       key={day.id}
+                      onClick={() => {
+                        if (occupying.length === 0 && onSlotClick) {
+                          onSlotClick(day.id, slot);
+                        }
+                      }}
+                      className={occupying.length === 0 ? "empty-grid-cell" : ""}
+                      title={occupying.length === 0 ? `Clique para buscar aulas em ${day.full} às ${slot.start}` : undefined}
                       style={{
                         backgroundColor: occupying.length === 0 
                           ? 'var(--bg-main)' 
@@ -355,7 +363,8 @@ export default function TimetableGrid({
                         height: '100%',
                         overflow: 'hidden', // Prevents tile overflow
                         boxSizing: 'border-box',
-                        transition: 'background-color 0.2s ease'
+                        transition: 'all 0.2s ease',
+                        cursor: occupying.length === 0 ? 'pointer' : 'default'
                       }}
                     >
                       {hasConflict && (
