@@ -21,9 +21,16 @@ export default function App() {
     return localStorage.getItem('ufjf_academic_period') || '2026/3';
   });
 
+  // Always fallback to initialCourses if savedCustom is empty or missing!
   const [courses, setCourses] = useState(() => {
     const savedCustom = localStorage.getItem('ufjf_custom_courses');
-    return savedCustom ? JSON.parse(savedCustom) : initialCourses;
+    if (savedCustom) {
+      const parsed = JSON.parse(savedCustom);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+    return initialCourses;
   });
 
   // Permanently preset Engenharia Computacional UFJF Curriculum
@@ -85,6 +92,15 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('ufjf_academic_period', academicPeriod);
   }, [academicPeriod]);
+
+  // Persist completed course codes
+  useEffect(() => {
+    localStorage.setItem('ufjf_completed_courses', JSON.stringify(Array.from(completedCourseCodes)));
+  }, [completedCourseCodes]);
+
+  useEffect(() => {
+    localStorage.setItem('ufjf_hide_completed', JSON.stringify(hideCompleted));
+  }, [hideCompleted]);
 
   // Map each course code to a unique color index
   const courseColorMap = useMemo(() => {
@@ -158,10 +174,10 @@ export default function App() {
     }
   };
 
-  // Reset entire catalog to zero courses
+  // Reset catalog restores initialCourses
   const handleResetCatalog = () => {
-    if (window.confirm("Deseja apagar todas as disciplinas importadas do seu catálogo?")) {
-      setCourses([]);
+    if (window.confirm("Deseja restaurar as turmas oferecidas de Engenharia Computacional?")) {
+      setCourses(initialCourses);
       setSelectedTurmas([]);
       localStorage.removeItem('ufjf_custom_courses');
       localStorage.removeItem('ufjf_selected_turmas');
@@ -202,39 +218,6 @@ export default function App() {
     }
   };
 
-  // Import completed courses from Histórico Escolar
-  const handleImportHistorico = (passedCodes, headerInfo) => {
-    setCompletedCourseCodes(prev => {
-      const updated = new Set([...prev, ...passedCodes.map(c => c.toUpperCase())]);
-      localStorage.setItem('ufjf_completed_courses', JSON.stringify(Array.from(updated)));
-      return updated;
-    });
-    setHideCompleted(true);
-    localStorage.setItem('ufjf_hide_completed', JSON.stringify(true));
-  };
-
-  const handleToggleCourseCompleted = (code) => {
-    const cleanCode = code.toUpperCase();
-    setCompletedCourseCodes(prev => {
-      const updated = new Set(prev);
-      if (updated.has(cleanCode)) {
-        updated.delete(cleanCode);
-      } else {
-        updated.add(cleanCode);
-      }
-      localStorage.setItem('ufjf_completed_courses', JSON.stringify(Array.from(updated)));
-      return updated;
-    });
-  };
-
-  const handleToggleHideCompleted = () => {
-    setHideCompleted(prev => {
-      const next = !prev;
-      localStorage.setItem('ufjf_hide_completed', JSON.stringify(next));
-      return next;
-    });
-  };
-
   // Import courses from SIGA parser
   const handleImportSigaCourses = (importedCourses, newPeriod) => {
     if (newPeriod) {
@@ -269,6 +252,24 @@ export default function App() {
     });
   };
 
+  // Import Histórico Escolar
+  const handleImportHistorico = (passedCodes) => {
+    setCompletedCourseCodes(new Set(passedCodes));
+  };
+
+  const handleToggleCourseCompleted = (code) => {
+    const upper = code.toUpperCase();
+    setCompletedCourseCodes(prev => {
+      const next = new Set(prev);
+      if (next.has(upper)) {
+        next.delete(upper);
+      } else {
+        next.add(upper);
+      }
+      return next;
+    });
+  };
+
   // Save current draft
   const handleSaveCurrentDraft = (name) => {
     const newDraft = {
@@ -298,12 +299,13 @@ export default function App() {
         totalHours={totalHours}
         academicPeriod={academicPeriod}
         onUpdateAcademicPeriod={setAcademicPeriod}
+        completedCount={completedCourseCodes.size}
+        onOpenHistorico={() => setIsHistoricoOpen(true)}
         onClear={handleClearAll}
         onExport={handleExport}
         onOpenDrafts={() => setIsDraftsOpen(true)}
         onOpenAddCustom={() => setIsAddCustomOpen(true)}
         onOpenSigaImporter={() => setIsSigaImporterOpen(true)}
-        onOpenHistorico={() => setIsHistoricoOpen(true)}
         onOpenTutorial={() => setIsTutorialOpen(true)}
       />
 
@@ -327,7 +329,7 @@ export default function App() {
           curriculumData={curriculumData}
           completedCourseCodes={completedCourseCodes}
           hideCompleted={hideCompleted}
-          onToggleHideCompleted={handleToggleHideCompleted}
+          onToggleHideCompleted={() => setHideCompleted(prev => !prev)}
           onToggleCourseCompleted={handleToggleCourseCompleted}
           onAddTurma={handleAddTurma}
           onRemoveTurma={handleRemoveTurma}
@@ -371,16 +373,10 @@ export default function App() {
         onImportCourses={handleImportSigaCourses}
       />
 
-      <HistoricoModal
+      <HistoricoModal 
         isOpen={isHistoricoOpen}
         onClose={() => setIsHistoricoOpen(false)}
         onImportHistorico={handleImportHistorico}
-      />
-
-      <TutorialModal 
-        isOpen={isTutorialOpen}
-        onClose={() => setIsTutorialOpen(false)}
-        onOpenImporter={() => setIsSigaImporterOpen(true)}
       />
 
       <SlotPickerModal
@@ -393,6 +389,12 @@ export default function App() {
         hideCompleted={hideCompleted}
         onAddTurma={handleAddTurma}
         checkTurmaConflict={checkTurmaConflict}
+      />
+
+      <TutorialModal 
+        isOpen={isTutorialOpen}
+        onClose={() => setIsTutorialOpen(false)}
+        onOpenImporter={() => setIsSigaImporterOpen(true)}
       />
 
     </div>
