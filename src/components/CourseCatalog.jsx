@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, Layers, Globe, X, GraduationCap, EyeOff, Check } from 'lucide-react';
-import { DAYS_OF_WEEK } from '../data/coursesData';
+import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, Layers, Globe, X, GraduationCap, EyeOff, Check, Lock } from 'lucide-react';
+import { DAYS_OF_WEEK, PREREQUISITES_MAP } from '../data/coursesData';
 
 export default function CourseCatalog({ 
   courses, 
@@ -62,12 +62,15 @@ export default function CourseCatalog({
     const normSearch = normalizeStr(searchTerm);
 
     return courses.filter(course => {
-      const isCompleted = completedCourseCodes.has(course.code.toUpperCase());
+      const codeUpper = course.code.toUpperCase();
+      const isCompleted = completedCourseCodes.has(codeUpper);
+
+      // Hide completed courses if toggle is ON
       if (hideCompleted && isCompleted) return false;
 
       const normCode = normalizeStr(course.code);
       const normName = normalizeStr(course.name);
-      const normTeachers = normalizeStr(course.turmas.flatMap(t => t.docentes).join(' '));
+      const normTeachers = normalizeStr(course.turmas.flatMap(t => t.docentes || []).join(' '));
 
       const matchesSearch = !normSearch || 
         normCode.includes(normSearch) || 
@@ -78,20 +81,20 @@ export default function CourseCatalog({
 
       // Filter by period ONLY IF EngComp filter is toggled ON and user didn't type a specific search term
       if (showEngCompFilter && !normSearch && selectedPeriodFilter !== 'all') {
-        const coursePeriod = coursePeriodMap[course.code.toUpperCase()];
+        const coursePeriod = coursePeriodMap[codeUpper];
         if (coursePeriod !== selectedPeriodFilter) return false;
       }
 
       // Filter by day if selected
       if (selectedDayFilter !== 'all') {
-        const hasDay = course.turmas.some(t => t.slots.some(s => s.day === selectedDayFilter));
+        const hasDay = course.turmas.some(t => (t.slots || []).some(s => s.day === selectedDayFilter));
         if (!hasDay) return false;
       }
 
       // Filter by shift
       if (selectedShiftFilter !== 'all') {
         const hasShift = course.turmas.some(t => {
-          return t.slots.some(s => {
+          return (t.slots || []).some(s => {
             const startH = parseInt(s.start.split(':')[0], 10);
             if (selectedShiftFilter === 'manha' && startH < 12) return true;
             if (selectedShiftFilter === 'tarde' && startH >= 12 && startH < 18) return true;
@@ -104,7 +107,7 @@ export default function CourseCatalog({
 
       return true;
     });
-  }, [courses, searchTerm, selectedDayFilter, selectedShiftFilter, selectedPeriodFilter, showEngCompFilter, coursePeriodMap]);
+  }, [courses, searchTerm, selectedDayFilter, selectedShiftFilter, selectedPeriodFilter, showEngCompFilter, coursePeriodMap, completedCourseCodes, hideCompleted]);
 
   return (
     <div style={{
@@ -167,27 +170,6 @@ export default function CourseCatalog({
             <GraduationCap size={14} /> Eng. Computacional {showEngCompFilter ? '✓' : ''}
           </button>
 
-          <button
-            onClick={onToggleHideCompleted}
-            style={{
-              fontSize: '0.725rem',
-              color: hideCompleted ? '#fff' : 'var(--text-muted)',
-              backgroundColor: hideCompleted ? 'rgba(139, 92, 246, 0.25)' : 'var(--bg-main)',
-              border: hideCompleted ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-              padding: '0.25rem 0.6rem',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-              boxShadow: hideCompleted ? '0 0 10px rgba(139, 92, 246, 0.3)' : 'none'
-            }}
-            title="Ocultar disciplinas já concluídas/aprovadas no histórico"
-          >
-            <EyeOff size={14} /> Ocultar Concluídas ({completedCourseCodes.size}) {hideCompleted ? '✓' : ''}
-          </button>
-
           {courses.length > 0 && (
             <button
               onClick={onResetCatalog}
@@ -227,7 +209,7 @@ export default function CourseCatalog({
             />
             <input 
               type="text" 
-              placeholder="Pesquise por código (ex: MAT013), nome ou professor..."
+              placeholder="Pesquise por código (ex: MAT154), nome ou professor..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -503,10 +485,17 @@ export default function CourseCatalog({
             </div>
           ) : (
             filteredCourses.map(course => {
+              const codeUpper = course.code.toUpperCase();
               const isSearching = searchTerm.trim().length > 0;
               const isExpanded = isSearching || expandedCourse === course.code;
               const hasAnySelected = course.turmas.some(t => selectedTurmaIds.has(t.id));
-              const coursePeriod = coursePeriodMap[course.code.toUpperCase()];
+              const coursePeriod = coursePeriodMap[codeUpper];
+              const isCompleted = completedCourseCodes.has(codeUpper);
+
+              // Calculate Prerequisites Met Status
+              const prereqs = course.prereqs || PREREQUISITES_MAP[codeUpper] || [];
+              const missingPrereqs = prereqs.filter(p => !completedCourseCodes.has(p.toUpperCase()));
+              const hasPrereqsMet = missingPrereqs.length === 0;
 
               return (
                 <div 
@@ -514,9 +503,14 @@ export default function CourseCatalog({
                   style={{
                     backgroundColor: 'var(--bg-main)',
                     borderRadius: 'var(--radius-lg)',
-                    border: hasAnySelected ? '1px solid var(--color-accent)' : '1px solid var(--border-color)',
+                    border: hasAnySelected 
+                      ? '1px solid var(--color-accent)' 
+                      : !hasPrereqsMet && !isCompleted 
+                        ? '1px solid rgba(239, 68, 68, 0.3)' 
+                        : '1px solid var(--border-color)',
                     overflow: 'hidden',
-                    transition: 'border-color 0.2s ease'
+                    transition: 'border-color 0.2s ease',
+                    opacity: !hasPrereqsMet && !isCompleted && !hasAnySelected ? 0.8 : 1
                   }}
                 >
                   {/* Course Header */}
@@ -553,6 +547,33 @@ export default function CourseCatalog({
                             fontWeight: 700
                           }}>
                             {coursePeriod}
+                          </span>
+                        )}
+                        {isCompleted && (
+                          <span style={{
+                            fontSize: '0.68rem',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            color: 'var(--color-success)',
+                            padding: '0.1rem 0.4rem',
+                            borderRadius: 'var(--radius-sm)',
+                            fontWeight: 700
+                          }}>
+                            ✓ Concluída
+                          </span>
+                        )}
+                        {!hasPrereqsMet && !isCompleted && (
+                          <span style={{
+                            fontSize: '0.68rem',
+                            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                            color: '#ef4444',
+                            padding: '0.1rem 0.4rem',
+                            borderRadius: 'var(--radius-sm)',
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '2px'
+                          }}>
+                            <Lock size={10} /> Requer {missingPrereqs.join(', ')}
                           </span>
                         )}
                         {hasAnySelected && (
@@ -601,9 +622,9 @@ export default function CourseCatalog({
                               padding: '0.6rem 0.75rem',
                               border: isSelected 
                                 ? '1px solid var(--color-accent)' 
-                                : hasConflict 
-                                  ? '1px dashed rgba(239, 68, 68, 0.5)' 
-                                  : '1px solid var(--border-color)',
+                                : !hasPrereqsMet 
+                                  ? '1px solid rgba(239, 68, 68, 0.3)' 
+                                  : (hasConflict ? '1px dashed rgba(239, 68, 68, 0.5)' : '1px solid var(--border-color)'),
                               display: 'flex',
                               flexDirection: 'column',
                               gap: '0.35rem'
@@ -611,7 +632,7 @@ export default function CourseCatalog({
                           >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <strong style={{ fontSize: '0.825rem', color: 'var(--text-main)' }}>
-                                Turma {turma.turma}
+                                Turma {turma.turma || turma.name}
                               </strong>
 
                               {isSelected ? (
@@ -630,6 +651,28 @@ export default function CourseCatalog({
                                   }}
                                 >
                                   Remover
+                                </button>
+                              ) : !hasPrereqsMet ? (
+                                <button
+                                  onClick={() => {
+                                    alert(`Esta matéria requer a conclusão prévia de: ${missingPrereqs.join(', ')}. Acesse o menu 'Meu Histórico' para marcar suas matérias concluídas.`);
+                                  }}
+                                  style={{
+                                    fontSize: '0.725rem',
+                                    padding: '0.25rem 0.6rem',
+                                    borderRadius: 'var(--radius-sm)',
+                                    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                                    color: '#ef4444',
+                                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                                    fontWeight: 700,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '3px',
+                                    cursor: 'pointer'
+                                  }}
+                                  title={`Pré-requisitos pendentes: ${missingPrereqs.join(', ')}`}
+                                >
+                                  <Lock size={12} /> Bloqueada
                                 </button>
                               ) : (
                                 <button
@@ -669,12 +712,12 @@ export default function CourseCatalog({
 
                             {/* Slots */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px' }}>
-                              {turma.slots.length === 0 ? (
+                              {(turma.slots || []).length === 0 ? (
                                 <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                                   Horário a definir / EAD
                                 </span>
                               ) : (
-                                turma.slots.map((s, idx) => {
+                                (turma.slots || []).map((s, idx) => {
                                   const dayObj = DAYS_OF_WEEK.find(d => d.id === s.day);
                                   return (
                                     <div 
@@ -694,9 +737,9 @@ export default function CourseCatalog({
                                         {dayObj?.label}
                                       </span>
                                       <span>{s.start} - {s.end}</span>
-                                      {s.room && (
+                                      {(s.room || s.location) && (
                                         <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                          <MapPin size={10} /> {s.room}
+                                          <MapPin size={10} /> {(s.room || s.location).replace('Sala ', '')}
                                         </span>
                                       )}
                                     </div>

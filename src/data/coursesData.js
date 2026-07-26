@@ -1,6 +1,48 @@
 // Pre-defined Offered Courses for UFJF Engenharia Computacional (2026/3)
 // Includes complete schedules, teachers, and official prerequisites (Currículo 12023)
 
+export const PREREQUISITES_MAP = {
+  'DCC200': ['DCC199'],
+  'EST028': ['MAT154'],
+  'FIS077': ['FIS122'],
+  'MAT156': ['MAT154', 'MAT155'],
+  'QUI168': ['QUI126'],
+  'DCC013': ['DCC200'],
+  'DCC025': ['DCC200'],
+  'EST029': ['MAT156'],
+  'FIS074': ['FIS073', 'MAT156'],
+  'MAC036': ['MAT155'],
+  'MAT157': ['MAT156'],
+  'DCC008': ['DCC199', 'MAT156'],
+  'DCC012': ['DCC013'],
+  'FIS075': ['FIS074', 'MAT157'],
+  'MAC015': ['FIS073', 'MAT157'],
+  'MAT029': ['MAT156'],
+  'MAT158': ['MAT155'],
+  'DCC059': ['DCC013'],
+  'FIS081': ['FIS074'],
+  'MAC019': ['MAC015', 'DCC008'],
+  'MAC024': ['DCC008'],
+  'MAC026': ['DCC008', 'MAT029'],
+  'DCC070': ['DCC122'],
+  'DCC117': ['DCC025'],
+  'MAC005': ['MAC019'],
+  'MAC008': ['MAC015'],
+  'DCC001': ['DCC013'],
+  'DCC060': ['DCC117'],
+  'DCC062': ['DCC070'],
+  'MAC037': ['MAC036'],
+  'DCC042': ['DCC070'],
+  'DCC163': ['MAT158'],
+  'MAC034': ['MAC008', 'MAC026'],
+  'MAC035': ['DCC008'],
+  'DCC125': ['DCC062'],
+  'DCC198': ['MAC035'],
+  'ESA002': ['QUI125'],
+  'MAC018': ['DCC059', 'MAC019', 'DCC122'],
+  'MAC039': ['MAC038']
+};
+
 export const initialCourses = [
   {
     code: "DCC199",
