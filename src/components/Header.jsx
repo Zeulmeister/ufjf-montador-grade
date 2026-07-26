@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Moon, Sun, Download, Trash2, Bookmark, PlusCircle, Upload, HelpCircle, Edit3 } from 'lucide-react';
+import { Calendar, Moon, Sun, Download, Trash2, Bookmark, PlusCircle, Upload, HelpCircle, Edit3, GraduationCap } from 'lucide-react';
 
 export default function Header({ 
   theme, 
@@ -13,6 +13,7 @@ export default function Header({
   onOpenDrafts,
   onOpenAddCustom,
   onOpenSigaImporter,
+  onOpenHistorico,
   onOpenTutorial
 }) {
   const handleEditPeriod = () => {
@@ -161,7 +162,28 @@ export default function Header({
             title="Enviar arquivo PDF do SIGA com as turmas oferecidas"
           >
             <Upload size={16} />
-            Importar PDF (SIGA)
+            Importar Oferta (SIGA)
+          </button>
+
+          <button
+            onClick={onOpenHistorico}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: 'rgba(139, 92, 246, 0.2)',
+              color: '#c084fc',
+              border: '1px solid rgba(139, 92, 246, 0.4)',
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              padding: '0.5rem 0.85rem',
+              borderRadius: 'var(--radius-md)',
+              boxShadow: '0 0 12px rgba(139, 92, 246, 0.25)'
+            }}
+            title="Enviar PDF do seu Histórico Escolar para marcar matérias concluídas"
+          >
+            <GraduationCap size={16} />
+            Analisar Histórico
           </button>
 
           <button

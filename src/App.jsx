@@ -7,6 +7,7 @@ import CourseCatalog from './components/CourseCatalog';
 import CustomCourseModal from './components/CustomCourseModal';
 import SavedDraftsModal from './components/SavedDraftsModal';
 import SigaImporterModal from './components/SigaImporterModal';
+import HistoricoModal from './components/HistoricoModal';
 import TutorialModal from './components/TutorialModal';
 
 import { initialCourses, COURSE_COLORS } from './data/coursesData';
@@ -39,10 +40,22 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Completed Course Codes from Histórico Escolar
+  const [completedCourseCodes, setCompletedCourseCodes] = useState(() => {
+    const saved = localStorage.getItem('ufjf_completed_courses');
+    return new Set(saved ? JSON.parse(saved) : []);
+  });
+
+  const [hideCompleted, setHideCompleted] = useState(() => {
+    const saved = localStorage.getItem('ufjf_hide_completed');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
   // Modals state
   const [isAddCustomOpen, setIsAddCustomOpen] = useState(false);
   const [isDraftsOpen, setIsDraftsOpen] = useState(false);
   const [isSigaImporterOpen, setIsSigaImporterOpen] = useState(false);
+  const [isHistoricoOpen, setIsHistoricoOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
 
   const gridRef = useRef(null);
@@ -187,6 +200,39 @@ export default function App() {
     }
   };
 
+  // Import completed courses from Histórico Escolar
+  const handleImportHistorico = (passedCodes, headerInfo) => {
+    setCompletedCourseCodes(prev => {
+      const updated = new Set([...prev, ...passedCodes.map(c => c.toUpperCase())]);
+      localStorage.setItem('ufjf_completed_courses', JSON.stringify(Array.from(updated)));
+      return updated;
+    });
+    setHideCompleted(true);
+    localStorage.setItem('ufjf_hide_completed', JSON.stringify(true));
+  };
+
+  const handleToggleCourseCompleted = (code) => {
+    const cleanCode = code.toUpperCase();
+    setCompletedCourseCodes(prev => {
+      const updated = new Set(prev);
+      if (updated.has(cleanCode)) {
+        updated.delete(cleanCode);
+      } else {
+        updated.add(cleanCode);
+      }
+      localStorage.setItem('ufjf_completed_courses', JSON.stringify(Array.from(updated)));
+      return updated;
+    });
+  };
+
+  const handleToggleHideCompleted = () => {
+    setHideCompleted(prev => {
+      const next = !prev;
+      localStorage.setItem('ufjf_hide_completed', JSON.stringify(next));
+      return next;
+    });
+  };
+
   // Import courses from SIGA parser
   const handleImportSigaCourses = (importedCourses, newPeriod) => {
     if (newPeriod) {
@@ -255,6 +301,7 @@ export default function App() {
         onOpenDrafts={() => setIsDraftsOpen(true)}
         onOpenAddCustom={() => setIsAddCustomOpen(true)}
         onOpenSigaImporter={() => setIsSigaImporterOpen(true)}
+        onOpenHistorico={() => setIsHistoricoOpen(true)}
         onOpenTutorial={() => setIsTutorialOpen(true)}
       />
 
@@ -276,10 +323,15 @@ export default function App() {
           courses={courses}
           selectedTurmas={selectedTurmas}
           curriculumData={curriculumData}
+          completedCourseCodes={completedCourseCodes}
+          hideCompleted={hideCompleted}
+          onToggleHideCompleted={handleToggleHideCompleted}
+          onToggleCourseCompleted={handleToggleCourseCompleted}
           onAddTurma={handleAddTurma}
           onRemoveTurma={handleRemoveTurma}
           checkTurmaConflict={checkTurmaConflict}
           onOpenSigaImporter={() => setIsSigaImporterOpen(true)}
+          onOpenHistorico={() => setIsHistoricoOpen(true)}
           onResetCatalog={handleResetCatalog}
           onOpenTutorial={() => setIsTutorialOpen(true)}
         />
@@ -314,6 +366,12 @@ export default function App() {
         isOpen={isSigaImporterOpen}
         onClose={() => setIsSigaImporterOpen(false)}
         onImportCourses={handleImportSigaCourses}
+      />
+
+      <HistoricoModal
+        isOpen={isHistoricoOpen}
+        onClose={() => setIsHistoricoOpen(false)}
+        onImportHistorico={handleImportHistorico}
       />
 
       <TutorialModal 

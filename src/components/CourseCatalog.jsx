@@ -1,15 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, Layers, Globe, X, GraduationCap } from 'lucide-react';
+import { Search, Plus, AlertCircle, ChevronDown, ChevronUp, User, MapPin, Filter, Upload, Sparkles, Trash2, HelpCircle, Layers, Globe, X, GraduationCap, EyeOff, Check } from 'lucide-react';
 import { DAYS_OF_WEEK } from '../data/coursesData';
 
 export default function CourseCatalog({ 
   courses, 
   selectedTurmas, 
   curriculumData,
+  completedCourseCodes = new Set(),
+  hideCompleted = true,
+  onToggleHideCompleted,
+  onToggleCourseCompleted,
   onAddTurma, 
   onRemoveTurma,
   checkTurmaConflict,
   onOpenSigaImporter,
+  onOpenHistorico,
   onResetCatalog,
   onOpenTutorial
 }) {
@@ -57,6 +62,9 @@ export default function CourseCatalog({
     const normSearch = normalizeStr(searchTerm);
 
     return courses.filter(course => {
+      const isCompleted = completedCourseCodes.has(course.code.toUpperCase());
+      if (hideCompleted && isCompleted) return false;
+
       const normCode = normalizeStr(course.code);
       const normName = normalizeStr(course.name);
       const normTeachers = normalizeStr(course.turmas.flatMap(t => t.docentes).join(' '));
@@ -157,6 +165,27 @@ export default function CourseCatalog({
             title="Clique para ativar/desativar o filtro por períodos da Engenharia Computacional"
           >
             <GraduationCap size={14} /> Eng. Computacional {showEngCompFilter ? '✓' : ''}
+          </button>
+
+          <button
+            onClick={onToggleHideCompleted}
+            style={{
+              fontSize: '0.725rem',
+              color: hideCompleted ? '#fff' : 'var(--text-muted)',
+              backgroundColor: hideCompleted ? 'rgba(139, 92, 246, 0.25)' : 'var(--bg-main)',
+              border: hideCompleted ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+              padding: '0.25rem 0.6rem',
+              borderRadius: 'var(--radius-md)',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+              boxShadow: hideCompleted ? '0 0 10px rgba(139, 92, 246, 0.3)' : 'none'
+            }}
+            title="Ocultar disciplinas já concluídas/aprovadas no histórico"
+          >
+            <EyeOff size={14} /> Ocultar Concluídas ({completedCourseCodes.size}) {hideCompleted ? '✓' : ''}
           </button>
 
           {courses.length > 0 && (
