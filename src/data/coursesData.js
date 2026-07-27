@@ -3,6 +3,7 @@
 
 export const PREREQUISITES_MAP = {
   'DCC200': ['DCC199'],
+  'DC5200': ['DCC199'],
   'EST028': ['MAT154'],
   'FIS077': ['FIS122'],
   'MAT156': ['MAT154', 'MAT155'],
@@ -40,10 +41,113 @@ export const PREREQUISITES_MAP = {
   'DCC198': ['MAC035'],
   'ESA002': ['QUI125'],
   'MAC018': ['DCC059', 'MAC019', 'DCC122'],
-  'MAC039': ['MAC038']
+  'MAC039': ['MAC038'],
+  'DCC014': ['DCC059'],
+  'DCC033': ['DCC059'],
+  'DCC037': ['DCC070'],
+  'DCC045': ['DCC063'],
+  'DCC057': ['DCC070'],
+  'DCC063': ['DCC013'],
+  'DCC064': ['DCC062'],
+  'DCC065': ['MAT158'],
+  'DCC066': ['DCC199', 'MAT158'],
+  'DCC067': ['DCC059'],
+  'DCC068': ['DCC059'],
+  'DCC069': ['DCC163'],
+  'DCC071': ['DCC062'],
+  'DCC072': ['DCC042'],
+  'DCC073': ['EST029'],
+  'DCC074': ['EST029'],
+  'DCC075': ['DCC042'],
+  'DCC077': ['DCC060'],
+  'DCC078': ['DCC061'],
+  'DCC079': ['DCC025'],
+  'DCC080': ['DCC061', 'DCC060'],
+  'DCC082': ['DCC042', 'DCC062'],
+  'DCC083': ['DCC061'],
+  'DCC136': ['DCC059'],
+  'DCC173': ['DCC008'],
+  'DCC190': ['DCC008'],
+  'DCC191': ['DCC199', 'MAT156'],
+  'DCC211': ['DCC008'],
+  'ESA003': ['FIS081'],
+  'MAC002': ['MAC010', 'MAT029'],
+  'MAC003': ['MAC002'],
+  'MAC004': ['MAC003'],
+  'MAC007': ['MAC002'],
+  'MAC009': ['MAC007'],
+  'MAC010': ['FIS073', 'MAT157'],
+  'MAC014': ['DCC008'],
+  'MAC023': ['DCC008', 'MAC019'],
+  'MAC025': ['MAC002', 'EST029'],
+  'MAC029': ['MAC002'],
+  'FIS078': ['FIS077'],
+  'FIS080': ['FIS078'],
+  'MAT030': ['MAT029'],
+  'MAT049': ['MAT158']
 };
 
 export const initialCourses = [
+  // --- 1º PERÍODO ---
+  {
+    code: "MAT154",
+    name: "CÁLCULO I",
+    prereqs: [],
+    turmas: [
+      {
+        id: "MAT154-A",
+        name: "A",
+        docentes: ["LUIZ FERNANDO DE OLIVEIRA FARIA"],
+        slots: [
+          { day: "qua", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
+        ]
+      },
+      {
+        id: "MAT154-B",
+        name: "B",
+        docentes: ["ALEXEI DERIGLAZOV"],
+        slots: [
+          { day: "qua", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
+        ]
+      },
+      {
+        id: "MAT154-D",
+        name: "D",
+        docentes: ["TATIANA APARECIDA GOUVEIA"],
+        slots: [
+          { day: "qua", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "MAT155",
+    name: "GEOMETRIA ANALÍTICA E SISTEMAS LINEARES",
+    prereqs: [],
+    turmas: [
+      {
+        id: "MAT155-A",
+        name: "A",
+        docentes: ["CRISTIANE DE ANDRADE MENDES"],
+        slots: [
+          { day: "qua", start: "10:00", end: "12:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "10:00", end: "12:00", location: "Sala SECRETARIA" }
+        ]
+      },
+      {
+        id: "MAT155-B",
+        name: "B",
+        docentes: ["ALEXEI DERIGLAZOV"],
+        slots: [
+          { day: "qua", start: "10:00", end: "12:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "10:00", end: "12:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
   {
     code: "DCC199",
     name: "ALGORITMOS",
@@ -93,47 +197,6 @@ export const initialCourses = [
     ]
   },
   {
-    code: "MAT154",
-    name: "CÁLCULO I",
-    prereqs: [],
-    turmas: [
-      {
-        id: "MAT154-B",
-        name: "B",
-        docentes: ["ALEXEI DERIGLAZOV"],
-        slots: [
-          { day: "qua", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
-          { day: "sex", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
-        ]
-      },
-      {
-        id: "MAT154-D",
-        name: "D",
-        docentes: ["TATIANA APARECIDA GOUVEIA"],
-        slots: [
-          { day: "qua", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
-          { day: "sex", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
-        ]
-      }
-    ]
-  },
-  {
-    code: "MAT155",
-    name: "GEOMETRIA ANALÍTICA E SISTEMAS LINEARES",
-    prereqs: [],
-    turmas: [
-      {
-        id: "MAT155-A",
-        name: "A",
-        docentes: ["CRISTIANE DE ANDRADE MENDES"],
-        slots: [
-          { day: "qua", start: "10:00", end: "12:00", location: "Sala SECRETARIA" },
-          { day: "sex", start: "10:00", end: "12:00", location: "Sala SECRETARIA" }
-        ]
-      }
-    ]
-  },
-  {
     code: "FIS122",
     name: "LABORATÓRIO DE INTRODUÇÃO ÀS CIÊNCIAS FÍSICAS",
     prereqs: [],
@@ -156,10 +219,10 @@ export const initialCourses = [
       {
         id: "QUI125-A",
         name: "A",
-        docentes: ["DOCENTE DEPARTAMENTO QUÍMICA"],
+        docentes: ["MAURICIO ANTONIO PEREIRA DA SILVA"],
         slots: [
-          { day: "ter", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
-          { day: "qui", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
+          { day: "seg", start: "10:00", end: "12:00", location: "Sala S.402" },
+          { day: "qui", start: "10:00", end: "12:00", location: "Sala S.402" }
         ]
       }
     ]
@@ -172,9 +235,9 @@ export const initialCourses = [
       {
         id: "QUI126-A",
         name: "A",
-        docentes: ["DOCENTE DEPARTAMENTO QUÍMICA"],
+        docentes: ["MAURO VIEIRA DE ALMEIDA", "ALOISIO ANTONIO ALVES BENICIO"],
         slots: [
-          { day: "seg", start: "10:00", end: "12:00", location: "LAB QUÍMICA" }
+          { day: "ter", start: "08:00", end: "10:00", location: "Sala L 203 QUÍ" }
         ]
       }
     ]
@@ -190,6 +253,49 @@ export const initialCourses = [
         docentes: ["COORDENAÇÃO ICE"],
         slots: [
           { day: "sex", start: "16:00", end: "18:00", location: "ANFITEATRO ICE" }
+        ]
+      }
+    ]
+  },
+
+  // --- 2º PERÍODO ---
+  {
+    code: "MAT156",
+    name: "CÁLCULO II",
+    prereqs: ["MAT154", "MAT155"],
+    turmas: [
+      {
+        id: "MAT156-A",
+        name: "A",
+        docentes: ["SOFIA CAROLINA DA COSTA MELO"],
+        slots: [
+          { day: "qua", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
+        ]
+      },
+      {
+        id: "MAT156-C",
+        name: "C",
+        docentes: ["WILLIAN VERSOLATI FRANÇA"],
+        slots: [
+          { day: "qua", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "EST028",
+    name: "INTRODUÇÃO À ESTATÍSTICA",
+    prereqs: ["MAT154"],
+    turmas: [
+      {
+        id: "EST028-A",
+        name: "A",
+        docentes: ["DEP ESTATÍSTICA"],
+        slots: [
+          { day: "ter", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
         ]
       }
     ]
@@ -226,22 +332,6 @@ export const initialCourses = [
     ]
   },
   {
-    code: "EST028",
-    name: "INTRODUÇÃO À ESTATÍSTICA",
-    prereqs: ["MAT154"],
-    turmas: [
-      {
-        id: "EST028-A",
-        name: "A",
-        docentes: ["DEP ESTATÍSTICA"],
-        slots: [
-          { day: "ter", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
-          { day: "qui", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
-        ]
-      }
-    ]
-  },
-  {
     code: "FIS073",
     name: "FÍSICA I",
     prereqs: [],
@@ -263,19 +353,34 @@ export const initialCourses = [
     prereqs: ["FIS122"],
     turmas: [
       {
+        id: "FIS077-A",
+        name: "A",
+        docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
+        slots: [
+          { day: "seg", start: "08:00", end: "10:00", location: "Sala L 103 FÍS" }
+        ]
+      },
+      {
         id: "FIS077-B",
         name: "B",
         docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
         slots: [
           { day: "seg", start: "10:00", end: "12:00", location: "Sala L 103 FÍS" }
         ]
-      },
+      }
+    ]
+  },
+  {
+    code: "QUI168",
+    name: "LABORATÓRIO DE TRANSFORMAÇÕES QUÍMICAS",
+    prereqs: ["QUI126"],
+    turmas: [
       {
-        id: "FIS077-C",
-        name: "C",
-        docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
+        id: "QUI168-A",
+        name: "A",
+        docentes: ["CELLY MIEKO SHINOHARA IZUMI", "FABIO GODOY DELOLO"],
         slots: [
-          { day: "seg", start: "14:00", end: "16:00", location: "Sala L 103 FÍS" }
+          { day: "seg", start: "08:00", end: "10:00", location: "Sala L 203 QUÍ" }
         ]
       }
     ]
@@ -295,34 +400,20 @@ export const initialCourses = [
       }
     ]
   },
+
+  // --- 3º PERÍODO ---
   {
-    code: "MAT156",
-    name: "CÁLCULO II",
-    prereqs: ["MAT154", "MAT155"],
+    code: "EST029",
+    name: "CÁLCULO DE PROBABILIDADES I",
+    prereqs: ["MAT156"],
     turmas: [
       {
-        id: "MAT156-C",
-        name: "C",
-        docentes: ["WILLIAN VERSOLATI FRANÇA"],
-        slots: [
-          { day: "qua", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
-          { day: "sex", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
-        ]
-      }
-    ]
-  },
-  {
-    code: "DCC013",
-    name: "ESTRUTURA DE DADOS",
-    prereqs: ["DCC200"],
-    turmas: [
-      {
-        id: "DCC013-A",
+        id: "EST029-A",
         name: "A",
-        docentes: ["JOSE JERONIMO CAMATA"],
+        docentes: ["DEP ESTATÍSTICA"],
         slots: [
-          { day: "ter", start: "19:00", end: "21:00", location: "Sala SECRETARIA" },
-          { day: "qui", start: "19:00", end: "21:00", location: "Sala SECRETARIA" }
+          { day: "ter", start: "10:00", end: "12:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "10:00", end: "12:00", location: "Sala SECRETARIA" }
         ]
       }
     ]
@@ -353,8 +444,8 @@ export const initialCourses = [
         name: "A",
         docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
         slots: [
-          { day: "ter", start: "19:00", end: "21:00", location: "Sala SECRETARIA" },
-          { day: "qui", start: "19:00", end: "21:00", location: "Sala SECRETARIA" }
+          { day: "ter", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
         ]
       }
     ]
@@ -391,21 +482,23 @@ export const initialCourses = [
     ]
   },
   {
-    code: "DCC008",
-    name: "CÁLCULO NUMÉRICO",
-    prereqs: ["DCC199", "MAT156"],
+    code: "DCC013",
+    name: "ESTRUTURA DE DADOS",
+    prereqs: ["DCC200"],
     turmas: [
       {
-        id: "DCC008-C",
-        name: "C",
-        docentes: ["IURY HIGOR AGUIAR DA IGREJA"],
+        id: "DCC013-A",
+        name: "A",
+        docentes: ["JOSE JERONIMO CAMATA"],
         slots: [
-          { day: "seg", start: "10:00", end: "12:00", location: "Sala SECRETARIA" },
-          { day: "qui", start: "10:00", end: "12:00", location: "Sala SECRETARIA" }
+          { day: "ter", start: "19:00", end: "21:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "19:00", end: "21:00", location: "Sala SECRETARIA" }
         ]
       }
     ]
   },
+
+  // --- 4º PERÍODO ---
   {
     code: "DCC012",
     name: "ESTRUTURA DE DADOS II",
@@ -423,33 +516,17 @@ export const initialCourses = [
     ]
   },
   {
-    code: "FIS075",
-    name: "FÍSICA III",
-    prereqs: ["FIS074", "MAT157"],
+    code: "DCC008",
+    name: "CÁLCULO NUMÉRICO",
+    prereqs: ["DCC199", "MAT156"],
     turmas: [
       {
-        id: "FIS075-B",
-        name: "B",
-        docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
+        id: "DCC008-C",
+        name: "C",
+        docentes: ["IURY HIGOR AGUIAR DA IGREJA"],
         slots: [
-          { day: "ter", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
-          { day: "qui", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
-        ]
-      }
-    ]
-  },
-  {
-    code: "MAC015",
-    name: "RESISTÊNCIA DOS MATERIAIS",
-    prereqs: ["FIS073", "MAT157"],
-    turmas: [
-      {
-        id: "MAC015-X",
-        name: "X",
-        docentes: ["GUSTAVO HENRIQUE NALON", "ALEXANDRE ABRAHAO CURY"],
-        slots: [
-          { day: "seg", start: "17:00", end: "19:00", location: "Sala SALA 5205" },
-          { day: "qua", start: "17:00", end: "19:00", location: "Sala SALA 5205" }
+          { day: "seg", start: "10:00", end: "12:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "10:00", end: "12:00", location: "Sala SECRETARIA" }
         ]
       }
     ]
@@ -486,6 +563,40 @@ export const initialCourses = [
       }
     ]
   },
+  {
+    code: "MAC015",
+    name: "RESISTÊNCIA DOS MATERIAIS",
+    prereqs: ["FIS073", "MAT157"],
+    turmas: [
+      {
+        id: "MAC015-X",
+        name: "X",
+        docentes: ["GUSTAVO HENRIQUE NALON", "ALEXANDRE ABRAHAO CURY"],
+        slots: [
+          { day: "seg", start: "17:00", end: "19:00", location: "Sala SALA 5205" },
+          { day: "qua", start: "17:00", end: "19:00", location: "Sala SALA 5205" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "FIS075",
+    name: "FÍSICA III",
+    prereqs: ["FIS074", "MAT157"],
+    turmas: [
+      {
+        id: "FIS075-B",
+        name: "B",
+        docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
+        slots: [
+          { day: "ter", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+
+  // --- 5º PERÍODO ---
   {
     code: "DCC059",
     name: "TEORIA DOS GRAFOS",
@@ -567,6 +678,24 @@ export const initialCourses = [
     ]
   },
   {
+    code: "MAC026",
+    name: "INTRODUÇÃO AOS MÉTODOS DISCRETOS",
+    prereqs: ["DCC008", "MAT029"],
+    turmas: [
+      {
+        id: "MAC026-A",
+        name: "A",
+        docentes: ["DOCENTE DEP MAC"],
+        slots: [
+          { day: "ter", start: "14:00", end: "16:00", location: "LAB. 2 - ENG. COMP." },
+          { day: "qui", start: "14:00", end: "16:00", location: "LAB. 2 - ENG. COMP." }
+        ]
+      }
+    ]
+  },
+
+  // --- 6º PERÍODO ---
+  {
     code: "DCC070",
     name: "ORGANIZAÇÃO DE COMPUTADORES",
     prereqs: ["DCC122"],
@@ -630,6 +759,8 @@ export const initialCourses = [
       }
     ]
   },
+
+  // --- 7º PERÍODO ---
   {
     code: "DCC001",
     name: "ANÁLISE E PROJETO DE ALGORITMOS",
@@ -678,6 +809,23 @@ export const initialCourses = [
       }
     ]
   },
+  {
+    code: "MAC037",
+    name: "TÓPICOS AVANÇADOS EM MODELAGEM GEOMÉTRICA COMPUTACIONAL",
+    prereqs: ["MAC036"],
+    turmas: [
+      {
+        id: "MAC037-A",
+        name: "A",
+        docentes: ["DOCENTE DEP MAC"],
+        slots: [
+          { day: "ter", start: "14:00", end: "16:00", location: "LAB MAC" }
+        ]
+      }
+    ]
+  },
+
+  // --- 8º PERÍODO ---
   {
     code: "DCC042",
     name: "REDES DE COMPUTADORES",
@@ -755,6 +903,23 @@ export const initialCourses = [
       }
     ]
   },
+
+  // --- 9º PERÍODO ---
+  {
+    code: "DCC125",
+    name: "PROGRAMAÇÃO PARALELA",
+    prereqs: ["DCC062"],
+    turmas: [
+      {
+        id: "DCC125-A",
+        name: "A",
+        docentes: ["DOCENTE DCC"],
+        slots: [
+          { day: "ter", start: "19:00", end: "21:00", location: "LAB DCC" }
+        ]
+      }
+    ]
+  },
   {
     code: "DCC198",
     name: "TRABALHO MULTIDISCIPLINAR APLICADO",
@@ -766,6 +931,205 @@ export const initialCourses = [
         docentes: ["RODRIGO WEBER DOS SANTOS"],
         slots: [
           { day: "ter", start: "10:00", end: "12:00", location: "Sala LAB ENG COMP 2" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "ESA002",
+    name: "ECOLOGIA E PRESERVAÇÃO DO AMBIENTE",
+    prereqs: ["QUI125"],
+    turmas: [
+      {
+        id: "ESA002-A",
+        name: "A",
+        docentes: ["DOCENTE DEP ESA"],
+        slots: [
+          { day: "qui", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "MAC018",
+    name: "ESTÁGIO EM ENGENHARIA COMPUTACIONAL",
+    prereqs: ["DCC059", "MAC019", "DCC122"],
+    turmas: [
+      {
+        id: "MAC018-A",
+        name: "A",
+        docentes: ["COORDENAÇÃO ESTÁGIO"],
+        slots: []
+      }
+    ]
+  },
+  {
+    code: "MAC038",
+    name: "TRABALHO FINAL DE CURSO I",
+    prereqs: [],
+    turmas: [
+      {
+        id: "MAC038-A",
+        name: "A",
+        docentes: ["ORIENTADOR TFC"],
+        slots: []
+      }
+    ]
+  },
+
+  // --- 10º PERÍODO ---
+  {
+    code: "MAC039",
+    name: "TRABALHO FINAL DE CURSO II",
+    prereqs: ["MAC038"],
+    turmas: [
+      {
+        id: "MAC039-A",
+        name: "A",
+        docentes: ["ORIENTADOR TFC"],
+        slots: []
+      }
+    ]
+  },
+
+  // --- DISCIPLINAS COMPLEMENTARES E ELETIVAS DOS DEPARTAMENTOS ---
+  {
+    code: "MAT013",
+    name: "MATEMÁTICA FINANCEIRA",
+    prereqs: [],
+    turmas: [
+      {
+        id: "MAT013-A",
+        name: "A",
+        docentes: ["ANDRE ARBEX HALLACK"],
+        slots: [
+          { day: "ter", start: "16:00", end: "18:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "16:00", end: "18:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "MAT044",
+    name: "HISTORIA DA MATEMATICA",
+    prereqs: [],
+    turmas: [
+      {
+        id: "MAT044-A",
+        name: "A",
+        docentes: ["MARCO AURÉLIO KISTEMANN JUNIOR"],
+        slots: [
+          { day: "ter", start: "14:00", end: "16:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "14:00", end: "16:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "MAT049",
+    name: "ALGEBRA LINEAR II",
+    prereqs: ["MAT158"],
+    turmas: [
+      {
+        id: "MAT049-A",
+        name: "A",
+        docentes: ["JOANA DARC ANTONIA SANTOS DA CRUZ"],
+        slots: [
+          { day: "ter", start: "10:00", end: "12:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "FIS033",
+    name: "TEORIA ELETROMAGNETICA I",
+    prereqs: [],
+    turmas: [
+      {
+        id: "FIS033-A",
+        name: "A",
+        docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
+        slots: [
+          { day: "qua", start: "19:00", end: "21:00", location: "Sala SECRETARIA" },
+          { day: "sex", start: "19:00", end: "21:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "FIS076",
+    name: "FISICA IV",
+    prereqs: [],
+    turmas: [
+      {
+        id: "FIS076-A",
+        name: "A",
+        docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
+        slots: [
+          { day: "ter", start: "08:00", end: "10:00", location: "Sala SECRETARIA" },
+          { day: "qui", start: "08:00", end: "10:00", location: "Sala SECRETARIA" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "FIS078",
+    name: "LABORATÓRIO DE FÍSICA II",
+    prereqs: ["FIS077"],
+    turmas: [
+      {
+        id: "FIS078-A",
+        name: "A",
+        docentes: ["VIRGILIO DE CARVALHO DOS ANJOS"],
+        slots: [
+          { day: "seg", start: "10:00", end: "12:00", location: "Sala L 104 FÍS" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "QUI001",
+    name: "QUIMICA GERAL I",
+    prereqs: [],
+    turmas: [
+      {
+        id: "QUI001-A",
+        name: "A",
+        docentes: ["MAURICIO ANTONIO PEREIRA DA SILVA"],
+        slots: [
+          { day: "qua", start: "14:00", end: "17:00", location: "Sala 3404" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "MAC002",
+    name: "RESISTÊNCIA DOS MATERIAIS I",
+    prereqs: ["MAC010", "MAT029"],
+    turmas: [
+      {
+        id: "MAC002-A",
+        name: "A",
+        docentes: ["PATRICIA HABIB HALLAK"],
+        slots: [
+          { day: "ter", start: "10:00", end: "12:00", location: "Sala SALA 5102" },
+          { day: "qui", start: "10:00", end: "12:00", location: "Sala SALA 5102" }
+        ]
+      }
+    ]
+  },
+  {
+    code: "DCC065",
+    name: "COMPUTAÇÃO GRÁFICA",
+    prereqs: ["MAT158"],
+    turmas: [
+      {
+        id: "DCC065-A",
+        name: "A",
+        docentes: ["DOCENTE DCC"],
+        slots: [
+          { day: "qua", start: "19:00", end: "21:00", location: "LAB DCC" }
         ]
       }
     ]

@@ -337,7 +337,8 @@ export default function TimetableGrid({
                   return (
                     <div 
                       key={day.id}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         if (occupying.length === 0 && onSlotClick) {
                           onSlotClick(day.id, slot);
                         }
@@ -361,12 +362,31 @@ export default function TimetableGrid({
                         gap: '2px',
                         justifyContent: 'center',
                         height: '100%',
-                        overflow: 'hidden', // Prevents tile overflow
+                        overflow: 'hidden',
                         boxSizing: 'border-box',
                         transition: 'all 0.2s ease',
                         cursor: occupying.length === 0 ? 'pointer' : 'default'
                       }}
                     >
+                      {occupying.length === 0 && (
+                        <div 
+                          className="empty-cell-placeholder"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                            width: '100%',
+                            color: 'var(--text-muted)',
+                            opacity: 0.25,
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            userSelect: 'none'
+                          }}
+                        >
+                          +
+                        </div>
+                      )}
                       {hasConflict && (
                         <div style={{
                           display: 'flex',
