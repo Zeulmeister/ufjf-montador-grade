@@ -22,7 +22,7 @@ export default function CourseCatalog({
   const [selectedDayFilter, setSelectedDayFilter] = useState('all');
   const [selectedShiftFilter, setSelectedShiftFilter] = useState('all');
   const [selectedPeriodFilter, setSelectedPeriodFilter] = useState('all');
-  const [showEngCompFilter, setShowEngCompFilter] = useState(false);
+  const [showEngCompFilter, setShowEngCompFilter] = useState(true);
   const [expandedCourse, setExpandedCourse] = useState(null);
 
   const selectedTurmaIds = useMemo(() => {
@@ -139,7 +139,7 @@ export default function CourseCatalog({
             Catálogo de Disciplinas
           </h2>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {courses.length} disciplinas importadas
+            ⚡ {courses.length} disciplinas pré-carregadas (2026/3)
           </span>
         </div>
         
@@ -191,6 +191,48 @@ export default function CourseCatalog({
             </button>
           )}
         </div>
+      </div>
+
+      {/* Pre-installed Info Banner */}
+      <div style={{
+        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        border: '1px solid rgba(139, 92, 246, 0.3)',
+        borderRadius: 'var(--radius-md)',
+        padding: '0.65rem 0.85rem',
+        fontSize: '0.775rem',
+        color: 'var(--text-main)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Sparkles size={16} style={{ color: '#c084fc', flexShrink: 0 }} />
+          <span>
+            <strong>Catálogo 100% Pré-Carregado!</strong> Adicione seu <strong>Histórico Escolar</strong> para marcar matérias feitas e liberar o próximo período.
+          </span>
+        </div>
+        <button
+          onClick={onOpenHistorico}
+          style={{
+            backgroundColor: '#8b5cf6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            padding: '0.35rem 0.75rem',
+            fontWeight: 700,
+            fontSize: '0.75rem',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            boxShadow: '0 0 10px rgba(139, 92, 246, 0.4)'
+          }}
+        >
+          <GraduationCap size={14} /> Analisar Histórico
+        </button>
       </div>
 
       {courses.length > 0 && (
