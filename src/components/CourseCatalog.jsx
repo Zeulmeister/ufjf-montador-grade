@@ -139,37 +139,11 @@ export default function CourseCatalog({
             Catálogo de Disciplinas
           </h2>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            ⚡ {courses.length} disciplinas pré-carregadas (2026/3)
+            {courses.length} disciplinas no catálogo
           </span>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-          {/* Optional Engenharia Computacional Filter Toggle */}
-          <button
-            onClick={() => {
-              const nextState = !showEngCompFilter;
-              setShowEngCompFilter(nextState);
-              if (!nextState) setSelectedPeriodFilter('all');
-            }}
-            style={{
-              fontSize: '0.725rem',
-              color: showEngCompFilter ? '#0f172a' : 'var(--color-secondary)',
-              backgroundColor: showEngCompFilter ? 'var(--color-secondary)' : 'rgba(245, 158, 11, 0.12)',
-              border: '1px solid rgba(245, 158, 11, 0.4)',
-              padding: '0.25rem 0.6rem',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-              boxShadow: showEngCompFilter ? 'var(--shadow-sm)' : 'none'
-            }}
-            title="Clique para ativar/desativar o filtro por períodos da Engenharia Computacional"
-          >
-            <GraduationCap size={14} /> Eng. Computacional {showEngCompFilter ? '✓' : ''}
-          </button>
-
           {courses.length > 0 && (
             <button
               onClick={onResetCatalog}
@@ -193,10 +167,10 @@ export default function CourseCatalog({
         </div>
       </div>
 
-      {/* Pre-installed Info Banner */}
+      {/* Info Banner for SIGA Import */}
       <div style={{
-        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-        border: '1px solid rgba(139, 92, 246, 0.3)',
+        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+        border: '1px solid rgba(56, 189, 248, 0.3)',
         borderRadius: 'var(--radius-md)',
         padding: '0.65rem 0.85rem',
         fontSize: '0.775rem',
@@ -208,16 +182,16 @@ export default function CourseCatalog({
         gap: '0.5rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Sparkles size={16} style={{ color: '#c084fc', flexShrink: 0 }} />
+          <Upload size={16} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
           <span>
-            <strong>Catálogo 100% Pré-Carregado!</strong> Adicione seu <strong>Histórico Escolar</strong> para marcar matérias feitas e liberar o próximo período.
+            <strong>Importe a Oferta de Turmas:</strong> Cole o texto ou envie o PDF do Plano Departamental (SIGA) para carregar suas matérias atualizadas.
           </span>
         </div>
         <button
-          onClick={onOpenHistorico}
+          onClick={onOpenSigaImporter}
           style={{
-            backgroundColor: '#8b5cf6',
-            color: '#fff',
+            backgroundColor: 'var(--color-accent)',
+            color: '#0f172a',
             border: 'none',
             borderRadius: 'var(--radius-sm)',
             padding: '0.35rem 0.75rem',
@@ -227,11 +201,10 @@ export default function CourseCatalog({
             whiteSpace: 'nowrap',
             display: 'flex',
             alignItems: 'center',
-            gap: '4px',
-            boxShadow: '0 0 10px rgba(139, 92, 246, 0.4)'
+            gap: '4px'
           }}
         >
-          <GraduationCap size={14} /> Analisar Histórico
+          <Upload size={14} /> Importar SIGA
         </button>
       </div>
 

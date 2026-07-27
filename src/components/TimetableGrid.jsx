@@ -337,14 +337,6 @@ export default function TimetableGrid({
                   return (
                     <div 
                       key={day.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (occupying.length === 0 && onSlotClick) {
-                          onSlotClick(day.id, slot);
-                        }
-                      }}
-                      className={occupying.length === 0 ? "empty-grid-cell" : ""}
-                      title={occupying.length === 0 ? `Clique para buscar aulas em ${day.full} às ${slot.start}` : undefined}
                       style={{
                         backgroundColor: occupying.length === 0 
                           ? 'var(--bg-main)' 
@@ -365,28 +357,9 @@ export default function TimetableGrid({
                         overflow: 'hidden',
                         boxSizing: 'border-box',
                         transition: 'all 0.2s ease',
-                        cursor: occupying.length === 0 ? 'pointer' : 'default'
+                        cursor: 'default'
                       }}
                     >
-                      {occupying.length === 0 && (
-                        <div 
-                          className="empty-cell-placeholder"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: '100%',
-                            width: '100%',
-                            color: 'var(--text-muted)',
-                            opacity: 0.25,
-                            fontSize: '0.7rem',
-                            fontWeight: 700,
-                            userSelect: 'none'
-                          }}
-                        >
-                          +
-                        </div>
-                      )}
                       {hasConflict && (
                         <div style={{
                           display: 'flex',

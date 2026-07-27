@@ -102,11 +102,6 @@ button {
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* Interactive Empty Cell Hover */
-.empty-grid-cell:hover {
-  background-color: rgba(56, 189, 248, 0.12) !important;
-  border-color: var(--color-accent) !important;
-}
 
 @keyframes spin {
   from { transform: rotate(0deg); }
